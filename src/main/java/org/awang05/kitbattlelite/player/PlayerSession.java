@@ -107,7 +107,7 @@ public final class PlayerSession {
         this.edit = edit;
     }
 
-    public boolean idPlayerProtected() {
+    public boolean isPlayerProtected() {
         return arenaId != null && protectionUntil > System.currentTimeMillis();
     }
 
