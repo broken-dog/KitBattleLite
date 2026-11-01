@@ -18,6 +18,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.awang05.kitbattlelite.config.PluginSettings;
+import org.awang05.kitbattlelite.hud.HealthDisplayService;
+import org.awang05.kitbattlelite.hud.SidebarService;
 import org.awang05.kitbattlelite.item.ItemService;
 import org.awang05.kitbattlelite.item.PluginItem;
 import org.awang05.kitbattlelite.kit.Kit;
@@ -45,10 +47,13 @@ public final class ArenaService {
     private final ItemService items;
     private final PluginSettings settings;
     private final WorldLoader worldLoader;
+    private final SidebarService sidebar;
+    private final HealthDisplayService health;
 
     public ArenaService(JavaPlugin plugin, ArenaRegistry arenas, SessionRegistry sessions,
                         StatsRepository stats, KitRepository kits, ItemService items,
-                        PluginSettings settings, WorldLoader worldLoader) {
+                        PluginSettings settings, WorldLoader worldLoader,
+                        SidebarService sidebar, HealthDisplayService health) {
         this.logger = plugin.getLogger();
         this.arenas = arenas;
         this.sessions = sessions;
@@ -57,6 +62,8 @@ public final class ArenaService {
         this.items = items;
         this.settings = settings;
         this.worldLoader = worldLoader;
+        this.sidebar = sidebar;
+        this.health = health;
     }
 
     public PlayerSession session(Player player) {
@@ -117,6 +124,8 @@ public final class ArenaService {
 
         resetForArena(player, arena.spawn());
         giveButtons(player);
+        sidebar.show(player);
+        health.join(player);
     }
 
     /**
@@ -140,10 +149,12 @@ public final class ArenaService {
         session.setEdit(null);
 
         resetForPreview(player, arena);
+        sidebar.show(player);
+        health.join(player);
     }
 
     /**
-     * 离场：恢复快照 → 传回返回点 → 清竞技场字段。
+     * 离场：摘掉 HUD → 恢复快照 → 传回返回点 → 清竞技场字段。
      *
      * @param teleport 退服时为 false（离线传送无意义且可能报错）
      */
@@ -152,6 +163,9 @@ public final class ArenaService {
         if (session == null || session.arenaId() == null) {
             return;
         }
+        sidebar.hide(player.getUniqueId());
+        health.leave(player);
+
         Location back = session.returnLocation();
         PlayerSnapshot snapshot = session.snapshot();
         if (snapshot != null) {
@@ -191,6 +205,8 @@ public final class ArenaService {
         clearInventory(victim);
         removeEnderPearls(victim);
         victim.setFireTicks(0);
+        sidebar.refresh(victim.getUniqueId());
+        health.update(victim);
 
         Player killer = victim.getKiller();
         if (killer == null) {
@@ -213,6 +229,7 @@ public final class ArenaService {
 
         killerSession.setKillStreak(killerSession.killStreak() + 1);
         stats.getOrCreate(killer.getUniqueId(), killer.getName()).addKill();
+        sidebar.refresh(killer.getUniqueId());
         broadcastKill(arena, victim, killer);
     }
 
@@ -242,6 +259,8 @@ public final class ArenaService {
             player.addPotionEffect(new PotionEffect(
                     PotionEffectType.BLINDNESS, settings.deathBlindnessTicks(), 1));
         }
+        sidebar.refresh(player.getUniqueId());
+        health.update(player);
     }
 
     /**
@@ -265,6 +284,7 @@ public final class ArenaService {
         player.teleport(arena.get().teleport());
         kit.get().applyTo(player);
         session.setProtectionUntil(protectionDeadline());
+        sidebar.refresh(player.getUniqueId());
         return true;
     }
 
@@ -294,7 +314,7 @@ public final class ArenaService {
     }
 
     /**
-     * 重载/关服前把在线玩家安全请出：恢复快照、传回返回点、关闭插件菜单，并清空会话表。
+     * 重载/关服前把在线玩家安全请出：摘 HUD、恢复快照、传回返回点、关闭插件菜单，并清空会话表。
      */
     public void kickAll() {
         for (UUID playerId : sessions.ids()) {
@@ -303,6 +323,8 @@ public final class ArenaService {
                 leave(player, true);
                 player.closeInventory();
             }
+            // 会话字段缺失时 leave 会提前返回，这里再兜一次，保证没有残留的侧边栏/血量条目
+            sidebar.hide(playerId);
             sessions.remove(playerId);
         }
     }
