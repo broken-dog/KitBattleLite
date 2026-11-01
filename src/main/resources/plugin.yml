@@ -1,0 +1,17 @@
+name: KitBattleLite
+version: '${version}'
+author: awang05
+
+main: org.awang05.kitbattlelite.KitBattleLite
+api-version: '1.20'
+load: POSTWORLD
+
+commands:
+  kitbattlelite:
+    description: Main command for KitBattleLite
+    aliases: [kbl, kb]
+
+permissions:
+  kbl.admin:
+    description: 允许使用 KitBattleLite 的管理命令（地图/职业/重载/保存）
+    default: op
