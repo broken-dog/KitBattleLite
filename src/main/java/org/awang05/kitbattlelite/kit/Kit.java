@@ -51,6 +51,11 @@ public final class Kit {
         return icon.clone();
     }
 
+    /** 深拷贝一份同 id、同图标、同内容的职业，用于编辑工作副本。 */
+    public Kit copy() {
+        return new Kit(id, icon, contents);
+    }
+
     /** 替换图标；传入 null 恢复默认图标。 */
     public void setIcon(ItemStack icon) {
         this.icon = icon == null ? defaultIcon(id) : icon.clone();

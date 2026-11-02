@@ -124,6 +124,24 @@ public final class KitRepository {
         return Collections.unmodifiableSet(pages.keySet());
     }
 
+    /**
+     * 上一个已存在的页面下标。
+     *
+     * @return 没有更小的页面时返回 null
+     */
+    public Integer previousPage(int index) {
+        return pages.lowerKey(index);
+    }
+
+    /**
+     * 下一个已存在的页面下标。
+     *
+     * @return 没有更大的页面时返回 null
+     */
+    public Integer nextPage(int index) {
+        return pages.higherKey(index);
+    }
+
     /** 最大页面下标；没有页面返回 0。 */
     public int maxPageIndex() {
         return pages.isEmpty() ? 0 : pages.lastKey();

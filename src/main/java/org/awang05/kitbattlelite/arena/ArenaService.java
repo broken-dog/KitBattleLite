@@ -266,15 +266,16 @@ public final class ArenaService {
     /**
      * 选择职业：应用套装 → 传送到战斗点 → 重新计时免伤。
      *
-     * @return false 表示不在竞技场或职业不存在，调用方负责提示
+     * @return false 表示不在竞技场
+     * @throws IllegalArgumentException 职业不存在
      */
-    public boolean selectKit(Player player, String kitId) {
-        PlayerSession session = session(player);
-        if (session == null || session.arenaId() == null || session.isPreview()) {
-            return false;
-        }
+    public boolean selectKit(Player player, String kitId) throws IllegalArgumentException {
         Optional<Kit> kit = kits.findKit(kitId);
         if (kit.isEmpty()) {
+            throw new IllegalArgumentException("职业 " + kitId + " 不存在");
+        }
+        PlayerSession session = session(player);
+        if (session == null || session.arenaId() == null || session.isPreview()) {
             return false;
         }
         Optional<Arena> arena = arenas.find(session.arenaId());
