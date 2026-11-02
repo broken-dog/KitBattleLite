@@ -18,13 +18,15 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * 抽象菜单：自身就是 {@link InventoryHolder}，一份实例只对应一次“打开”。
+ * 抽象菜单：自身就是 {@link InventoryHolder}。
  *
- * <p>生命周期：由 {@link MenuFactory} 在打开时新建，{@link #open(Player)} 里创建库存并渲染，
- * 关闭后即被丢弃；不缓存 {@link Player}，也不被会话或其它菜单持有。菜单之间跳转一律走
- * {@link MenuFactory}，避免互相引用。
+ * <p>生命周期：默认由 {@link MenuFactory} 在每次打开时新建一个实例、关闭即丢弃；库存是
+ * **惰性创建**的（第一次 {@link #open(Player)} 时建），同一实例再次打开会复用同一个库存。
+ * 目前只有地图选择页利用这一点长期存活、原地刷新（见 {@link #refresh()} 与
+ * {@code WorldSelectMenu#updateIcon(Arena)}），其余菜单仍是一次一份。
  *
- * <p>点击策略由各菜单实现（见各自 Javadoc 的表格）；默认所有拖拽都被取消，只读菜单无需额外处理。
+ * <p>不缓存 {@link Player}，也不被会话或其它菜单持有；菜单之间跳转一律走 {@link MenuFactory}。
+ * 点击策略由各菜单实现；默认所有拖拽都被取消，只读菜单无需额外处理。
  * 延迟执行只捕获 {@link UUID}，下一 tick 再解析在线玩家。
  */
 public abstract class Menu implements InventoryHolder {
@@ -64,12 +66,32 @@ public abstract class Menu implements InventoryHolder {
     public void onClose(Player player, Inventory closed) {
     }
 
-    /** 打开菜单：每次新建库存，旧实例不重用。 */
+    /** 打开菜单：库存惰性创建；同一实例再次打开时复用已有库存。 */
     public final void open(Player player) {
         Objects.requireNonNull(player, "player");
-        inventory = Bukkit.createInventory(this, size(), title());
-        render(inventory);
+        if (inventory == null) {
+            inventory = Bukkit.createInventory(this, size(), title());
+            render(inventory);
+        }
         player.openInventory(inventory);
+    }
+
+    /**
+     * 原地重渲染：清空后按当前模型重画同一个库存，不新建菜单实例、不换库存对象。
+     *
+     * <p>用于 {@code /kbl reload} 这类结构性变化（地图增删、顺序调整）；库存还没创建过时什么都不做。
+     */
+    public final void refresh() {
+        if (inventory == null) {
+            return;
+        }
+        inventory.clear();
+        render(inventory);
+    }
+
+    /** 库存是否已经创建（菜单至少被打开过一次）；增量更新前用它判断。 */
+    protected final boolean hasInventory() {
+        return inventory != null;
     }
 
     /** 当前是否仍由这名玩家打开着本菜单（写回前用它校验 holder）。 */

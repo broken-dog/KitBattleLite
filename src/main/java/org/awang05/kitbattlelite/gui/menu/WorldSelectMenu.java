@@ -22,10 +22,13 @@ import java.util.List;
 /**
  * 地图选择：每张地图一格，左键进入；未开放的地图只有管理员能左键预览。
  *
- * <p>点击矩阵：顶部普通槽取消、玩家背包取消、Shift 点击取消——菜单完全只读。
- * 人数在打开那一刻定格（不随玩家进出实时变化），重开即刷新。
+ * <p>点击矩阵：顶部普通槽取消、玩家背包取消、Shift 点击取消——菜单完全只读。只读是它能长期存活、
+ * 被多名玩家同时看见的前提。
  *
- * <p>生命周期：由 {@link MenuFactory#openWorldSelect(Player)} 每次打开时新建，关闭即丢弃。
+ * <p>生命周期：与其它菜单不同，本菜单由 {@link MenuFactory} 长期持有一个实例（库存惰性创建、反复复用），
+ * 因为地图顺序与人数需要实时反映：进退场后调 {@link #updateIcon(Arena)} 原地改一格，
+ * {@code /kbl reload} 后用 {@link Menu#refresh()} 整体重画。实例不持有 {@link Player}，
+ * 顺序取自 {@link ArenaRegistry} 的注册顺序（{@code arenas.yml} 的书写顺序）。
  */
 public final class WorldSelectMenu extends Menu {
     private final ArenaRegistry arenas;
@@ -60,11 +63,20 @@ public final class WorldSelectMenu extends Menu {
         }
     }
 
+    /**
+     * 原地刷新一张地图的图标（人数/开放状态变化后调用）。
+     *
+     * <p>按 id 定位 slot。菜单还没打开过时什么都不做。
+     */
     public void updateIcon(Arena arena) {
-        int i = new ArrayList<>(arenas.all()).indexOf(arena);
-        if (i >= 0 && i < GuiLayout.WORLD_SLOT_COUNT) {
-            getInventory().setItem(i, icon(arena));
+        if (arena == null || !hasInventory()) {
+            return;
         }
+        int index = indexOf(arena.id());
+        if (index < 0 || index >= getInventory().getSize()) {
+            return;
+        }
+        getInventory().setItem(index, icon(arena));
     }
 
     private ItemStack icon(Arena arena) {
@@ -107,12 +119,14 @@ public final class WorldSelectMenu extends Menu {
         runNextTick(player.getUniqueId(), online -> {
             online.closeInventory();
             arenaService.join(online, arena);
+            // 共享库存：进场后把所有正在看这张菜单的人的人数一起刷新
+            updateIcon(arena);
         });
     }
 
     /** 第 n 个地图格对应的地图；超出或空槽返回 null。 */
     private Arena arenaAt(int guiSlot) {
-        if (guiSlot < 0 || guiSlot >= GuiLayout.WORLD_SLOT_COUNT) {
+        if (guiSlot < 0 || guiSlot >= size()) {
             return null;
         }
         int index = 0;
@@ -123,5 +137,17 @@ public final class WorldSelectMenu extends Menu {
             index++;
         }
         return null;
+    }
+
+    /** 按 id 找地图在菜单里的下标；不存在返回 -1。 */
+    private int indexOf(String arenaId) {
+        int index = 0;
+        for (Arena arena : arenas.all()) {
+            if (arena.id().equals(arenaId)) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
     }
 }

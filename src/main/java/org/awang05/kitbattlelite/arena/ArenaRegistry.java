@@ -4,19 +4,21 @@ import org.bukkit.World;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.NavigableMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * 运行时地图索引：按 id、按世界名查找。
- * <p>
- * 由 {@code ArenaRepository} 填充。
+ *
+ * <p>顺序是**注册顺序**——即 {@code arenas.yml} 里段的书写顺序，新导入的地图追加在末尾。
+ *
+ * <p>由 {@code ArenaRepository} 填充。
  */
 public final class ArenaRegistry {
-    private final NavigableMap<String, Arena> byId = new TreeMap<>();
-    private final NavigableMap<String, Arena> byWorldName = new TreeMap<>();
+    private final Map<String, Arena> byId = new LinkedHashMap<>();
+    private final Map<String, Arena> byWorldName = new LinkedHashMap<>();
 
     /** 注册地图；id 或世界名重复时抛异常 */
     public void register(Arena arena) {
@@ -57,11 +59,12 @@ public final class ArenaRegistry {
         return world == null ? Optional.empty() : byWorldName(world.getName());
     }
 
-    /** 全部地图（按 id 排序，只读视图）。 */
+    /** 全部地图（按注册顺序，只读视图）。 */
     public Collection<Arena> all() {
         return Collections.unmodifiableCollection(byId.values());
     }
 
+    /** 已注册的地图 id（按注册顺序，只读视图）。 */
     public Set<String> ids() {
         return Collections.unmodifiableSet(byId.keySet());
     }

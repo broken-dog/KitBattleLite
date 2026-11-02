@@ -1,5 +1,6 @@
 package org.awang05.kitbattlelite.gui;
 
+import org.awang05.kitbattlelite.arena.Arena;
 import org.awang05.kitbattlelite.arena.ArenaRegistry;
 import org.awang05.kitbattlelite.arena.ArenaService;
 import org.awang05.kitbattlelite.gui.menu.KitDetailMenu;
@@ -24,9 +25,11 @@ import java.util.function.Supplier;
  * <p>菜单之间不互相持有，所有跳转都经过这里；点击事件里不直接 {@code openInventory}，
  * 统一 {@link #openNextTick(Player, Supplier)}，避免在事件处理中替换打开的库存。
  *
- * <p>打开时渲染的是快照（如地图人数在打开那一刻定格），这是有意为之：菜单只活一次。
+ * <p>除地图选择页外，每次打开都是新实例、关闭即丢弃（渲染的是打开那一刻的快照）。
+ * 地图选择页需要显示实时人数与顺序，所以由本类长期持有一个实例（库存惰性创建），
+ * 平时用 {@link #updateWorldSelectIcon(Arena)} 原地改一格，reload 后用 {@link #refreshWorldSelect()}
  *
- * <p>生命周期：组合根创建一次并注入命令与菜单；无内部可变状态。
+ * <p>生命周期：组合根创建一次并注入命令与菜单；{@code worldSelectMenu} 是本类唯一的可变状态。
  */
 public final class MenuFactory {
     /** 管理权限节点，与 {@code plugin.yml} 的 {@code permissions} 保持一致。 */
@@ -37,6 +40,9 @@ public final class MenuFactory {
     private final ArenaService arenaService;
     private final KitRepository kits;
     private final ItemService items;
+
+    /** 长期存活的地图选择页；第一次打开时创建，见类注释。 */
+    private WorldSelectMenu worldSelectMenu;
 
     public MenuFactory(JavaPlugin plugin, ArenaRegistry arenas, ArenaService arenaService,
                        KitRepository kits, ItemService items) {
@@ -49,7 +55,29 @@ public final class MenuFactory {
 
     /** 地图选择（玩家入口）。 */
     public void openWorldSelect(Player player) {
-        openNextTick(player, () -> new WorldSelectMenu(plugin, arenas, arenaService));
+        openNextTick(player, this::worldSelectMenu);
+    }
+
+    /** 地图选择页整体重渲染（reload 后地图增删或顺序变化时调用）。 */
+    public void refreshWorldSelect() {
+        if (worldSelectMenu != null) {
+            worldSelectMenu.refresh();
+        }
+    }
+
+    /** 原地刷新地图选择页里的一张地图图标（进/离场等人数变化后调用）。 */
+    public void updateWorldSelectIcon(Arena arena) {
+        if (worldSelectMenu != null) {
+            worldSelectMenu.updateIcon(arena);
+        }
+    }
+
+    /** 地图选择页的实例；第一次用到时创建，之后一直复用。 */
+    private WorldSelectMenu worldSelectMenu() {
+        if (worldSelectMenu == null) {
+            worldSelectMenu = new WorldSelectMenu(plugin, arenas, arenaService);
+        }
+        return worldSelectMenu;
     }
 
     /** 职业页（只读，玩家选择职业）。 */
@@ -81,7 +109,7 @@ public final class MenuFactory {
                 expectedKitId, working));
     }
 
-    /** 下一 tick 打开新菜单；只捕获 UUID，玩家已离线时跳过。 */
+    /** 下一 tick 打开菜单；只捕获 UUID，玩家已离线时跳过。 */
     public void openNextTick(Player player, Supplier<Menu> supplier) {
         UUID playerId = player.getUniqueId();
         Bukkit.getScheduler().runTask(plugin, () -> {
