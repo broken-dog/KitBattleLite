@@ -1,0 +1,63 @@
+# KitBattleLite Messages
+# 语法是 MiniMessage：See MiniMessage Format: https://docs.advntr.dev/minimessage/format.html
+# 尖括号里的占位符（如 <name>、<count>、<killer>）由插件填值，用法见默认配置
+# Placeholders in angle brackets (like <name>, <count>, <killer>) are filled by the plugin, see default config for usage.
+
+# 缺键会回退到插件内置文案。 An unset key will fall back to the built-in message.
+# 改完用 /kbl reload 生效。 Use `/kbl reload` to apply changes.
+
+prefix: "<gray>[<gold>职业战争<gray>]<reset> "
+
+command:
+  no-permission: "<red>你没有权限执行这个命令"
+  player-only: "<red>这个命令只能由玩家执行"
+  unknown: "<red>未知的子命令，输入 <yellow>/kbl<red> 查看用法"
+  usage: |-
+    <gray>用法：
+    <yellow>/kbl open <gray>打开地图选择
+    <yellow>/kbl leave <gray>离开竞技场
+    <yellow>/kbl edit [页码] <gray>编辑职业页（管理员）
+    <yellow>/kbl import \<世界> <gray>导入地图（管理员）
+    <yellow>/kbl setworld \<name|spawn|teleport|ok> \<值> <gray>设置当前地图（管理员）
+    <yellow>/kbl kit delete \<id> <gray>删除职业；<yellow>/kbl kit prune <gray>清理无引用职业（管理员）
+    <yellow>/kbl reload <gray>重载职业/地图/战绩/文案（管理员）
+    <yellow>/kbl save <gray>保存全部数据（管理员）
+  reloaded: "<green>已重载职业、地图、战绩与文案；在线参与者已被请出竞技场"
+  saved: "<green>已保存职业、地图与战绩"
+  open-in-arena: "<red>你已经在竞技场里了"
+  leave-not-in-arena: "<red>你现在不在竞技场里"
+  button-outside-arena: "<red>你咋带出来的？没收（"
+  import-usage: "<red>用法：<yellow>/kbl import \\<世界名>"
+  import-success: "<green>已导入地图 <yellow><arena><green>，记得用 <yellow>/kbl setworld<green> 设置出生点和战斗点"
+  import-failed: "<red>导入失败：<yellow><reason>"
+  setworld-usage: "<red>用法：<yellow>/kbl setworld \\<name|spawn|teleport|ok> \\<值>"
+  setworld-not-in-arena: "<red>你当前不在任何竞技场世界里"
+  setworld-name: "<green>地图显示名已改为 <yellow><name>"
+  setworld-spawn: "<green>已把 <yellow><arena><green> 的出生点设为当前位置"
+  setworld-teleport: "<green>已把 <yellow><arena><green> 的战斗点设为当前位置"
+  setworld-enabled: "<green>地图 <yellow><arena><green> 现在<state>"
+  state-open: "开放"
+  state-closed: "关闭"
+  edit-usage: "<red>用法：<yellow>/kbl edit \\<页码> <red>，页码从 1 开始"
+  kit-usage: "<red>用法：<yellow>/kbl kit delete \\<id> <red> 或 <yellow>/kbl kit prune"
+  kit-unknown: "<red>未知的职业维护子命令"
+  kit-not-found: "<red>职业 <yellow><id><red> 不存在"
+  kit-deleted: "<green>已删除职业 <yellow><id><green>，清理了 <yellow><count><green> 个页面槽位"
+  kit-prune-none: "<green>没有被引用的职业，无需清理"
+  kit-prune-done: "<green>已清理 <yellow><count><green> 个职业：<yellow><ids>"
+
+arena:
+  death-unknown: "<red><victim> <yellow>不知怎的挂了"
+  death-self: "<red><victim> <yellow>紫砂了"
+  death-normal: "<red><victim> <yellow>阵亡了"
+  death-killed: "<red><victim> <yellow>被 <green><killer> <yellow>撅飞了"
+  kill-victim-title: "<red>你被 <green><killer> <red>击败"
+  kill-killer-title: "<yellow>击杀 +1"
+
+sidebar:
+  title: "<dark_red><bold>职业战争"
+  separator: "<gold><strikethrough>--------------"
+  streak: "<yellow>连杀数量：<white><value>"
+  kills: "<yellow>累计击杀：<white><value>"
+  deaths: "<yellow>累计死亡：<white><value>"
+  kdr: "<yellow>K/D：<white><value>"

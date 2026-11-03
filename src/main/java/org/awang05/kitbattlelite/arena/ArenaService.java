@@ -1,7 +1,6 @@
 package org.awang05.kitbattlelite.arena;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -17,6 +16,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.awang05.kitbattlelite.config.Messages;
 import org.awang05.kitbattlelite.config.PluginSettings;
 import org.awang05.kitbattlelite.hud.HealthDisplayService;
 import org.awang05.kitbattlelite.hud.SidebarService;
@@ -46,13 +46,14 @@ public final class ArenaService {
     private final KitRepository kits;
     private final ItemService items;
     private final PluginSettings settings;
+    private final Messages messages;
     private final WorldLoader worldLoader;
     private final SidebarService sidebar;
     private final HealthDisplayService health;
 
     public ArenaService(JavaPlugin plugin, ArenaRegistry arenas, SessionRegistry sessions,
                         StatsRepository stats, KitRepository kits, ItemService items,
-                        PluginSettings settings, WorldLoader worldLoader,
+                        PluginSettings settings, Messages messages, WorldLoader worldLoader,
                         SidebarService sidebar, HealthDisplayService health) {
         this.logger = plugin.getLogger();
         this.arenas = arenas;
@@ -61,6 +62,7 @@ public final class ArenaService {
         this.kits = kits;
         this.items = items;
         this.settings = settings;
+        this.messages = messages;
         this.worldLoader = worldLoader;
         this.sidebar = sidebar;
         this.health = health;
@@ -210,20 +212,17 @@ public final class ArenaService {
 
         Player killer = victim.getKiller();
         if (killer == null) {
-            broadcast(arena, Component.text(victim.getName(), NamedTextColor.RED)
-                    .append(Component.text(" 不知怎的挂了", NamedTextColor.YELLOW)));
+            broadcast(arena, messages.component("arena.death-unknown", "victim", victim.getName()));
             return;
         }
         if (killer.equals(victim)) {
-            broadcast(arena, Component.text(victim.getName(), NamedTextColor.RED)
-                    .append(Component.text(" 紫砂了", NamedTextColor.YELLOW)));
+            broadcast(arena, messages.component("arena.death-self", "victim", victim.getName()));
             return;
         }
         PlayerSession killerSession = session(killer);
         if (killerSession == null || killerSession.isPreview()
                 || !arena.id().equals(killerSession.arenaId())) {   // 异常边界
-            broadcast(arena, Component.text(victim.getName(), NamedTextColor.RED)
-                    .append(Component.text(" 阵亡了", NamedTextColor.YELLOW)));
+            broadcast(arena, messages.component("arena.death-normal", "victim", victim.getName()));
             return;
         }
 
@@ -384,16 +383,14 @@ public final class ArenaService {
     }
 
     private void broadcastKill(Arena arena, Player victim, Player killer) {
-        broadcast(arena, Component.text(victim.getName(), NamedTextColor.RED)
-                .append(Component.text(" 被 ", NamedTextColor.YELLOW))
-                .append(Component.text(killer.getName(), NamedTextColor.GREEN))
-                .append(Component.text(" 撅飞了", NamedTextColor.YELLOW)));
+        broadcast(arena, messages.component("arena.death-killed",
+                "victim", victim.getName(), "killer", killer.getName()));
         victim.showTitle(Title.title(
-                Component.text("你被 " + killer.getName() + " 击败", NamedTextColor.RED),
+                messages.component("arena.kill-victim-title", "killer", killer.getName()),
                 Component.empty()));
         killer.showTitle(Title.title(
                 Component.empty(),
-                Component.text("击杀 +1", NamedTextColor.YELLOW)));
+                messages.component("arena.kill-killer-title")));
         killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
     }
 

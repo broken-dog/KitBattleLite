@@ -2,10 +2,9 @@ package org.awang05.kitbattlelite.hud;
 
 import fr.mrmicky.fastboard.adventure.FastBoard;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.awang05.kitbattlelite.config.Messages;
 import org.awang05.kitbattlelite.config.PluginSettings;
 import org.awang05.kitbattlelite.player.PlayerProfile;
 import org.awang05.kitbattlelite.player.PlayerSession;
@@ -26,23 +25,22 @@ import java.util.UUID;
  * 所以退服/离场/禁用三处都必须 {@link #hide(UUID)}（内部会 {@code delete()} 并从表里移除）。
  *
  * <p>只读 {@link SessionRegistry} 与 {@link StatsRepository}，不创建战绩条目：渲染过程中不做写操作。
+ * 文案全部来自 {@link Messages}，这里只做取值与拼接。
  *
  * <p>生命周期：组合根创建；进图 {@link #show(Player)}，状态变化 {@link #refresh(UUID)}，
  * 离场/退服 {@link #hide(UUID)}，onDisable {@link #shutdown()}。
  */
 public final class SidebarService {
-    private static final Component TITLE = Component.text("职业战争", NamedTextColor.DARK_RED)
-            .decorate(TextDecoration.BOLD);
-    private static final Component SEPARATOR = Component.text("--------------", NamedTextColor.GOLD)
-            .decorate(TextDecoration.STRIKETHROUGH);
-
     private final PluginSettings settings;
+    private final Messages messages;
     private final SessionRegistry sessions;
     private final StatsRepository stats;
     private final Map<UUID, FastBoard> boards = new HashMap<>();
 
-    public SidebarService(PluginSettings settings, SessionRegistry sessions, StatsRepository stats) {
+    public SidebarService(PluginSettings settings, Messages messages, SessionRegistry sessions,
+                          StatsRepository stats) {
         this.settings = settings;
+        this.messages = messages;
         this.sessions = sessions;
         this.stats = stats;
     }
@@ -53,7 +51,7 @@ public final class SidebarService {
             return;
         }
         FastBoard board = boards.computeIfAbsent(player.getUniqueId(), id -> new FastBoard(player));
-        board.updateTitle(TITLE);
+        board.updateTitle(messages.component("sidebar.title"));
         board.updateLines(lines(player));
     }
 
@@ -104,17 +102,12 @@ public final class SidebarService {
         int streak = session == null ? 0 : session.killStreak();
 
         List<Component> lines = new ArrayList<>(6);
-        lines.add(SEPARATOR);
-        lines.add(line("连杀数量：", Integer.toString(streak)));
-        lines.add(line("累计击杀：", Integer.toString(kills)));
-        lines.add(line("累计死亡：", Integer.toString(deaths)));
-        lines.add(line("K/D：", String.format(Locale.ROOT, "%.2f", kdr)));
-        lines.add(SEPARATOR);
+        lines.add(messages.component("sidebar.separator"));
+        lines.add(messages.component("sidebar.streak", "value", Integer.toString(streak)));
+        lines.add(messages.component("sidebar.kills", "value", Integer.toString(kills)));
+        lines.add(messages.component("sidebar.deaths", "value", Integer.toString(deaths)));
+        lines.add(messages.component("sidebar.kdr", "value", String.format(Locale.ROOT, "%.2f", kdr)));
+        lines.add(messages.component("sidebar.separator"));
         return lines;
-    }
-
-    private static Component line(String label, String value) {
-        return Component.text(label, NamedTextColor.YELLOW)
-                .append(Component.text(value, NamedTextColor.WHITE));
     }
 }
