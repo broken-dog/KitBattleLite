@@ -5,10 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerSessionTest {
     private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000002");
@@ -63,5 +60,14 @@ class PlayerSessionTest {
     void editSessionValidatesPage() {
         assertThrows(IllegalArgumentException.class, () -> new PlayerSession.EditSession(0, 0, null, null));
         assertThrows(IllegalArgumentException.class, () -> new PlayerSession.EditSession(1, -1, null, null));
+    }
+
+    @Test
+    void protectionUntilCanBeSetToNegativeForPermanentProtection() {
+        PlayerSession session = new PlayerSession(ID);
+        session.setArenaId("arena");
+        session.setProtectionUntil(-1);
+        assertEquals(-1, session.protectionUntil());
+        assertTrue(session.isPlayerProtected());
     }
 }

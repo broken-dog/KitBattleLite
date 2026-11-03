@@ -90,11 +90,11 @@ public final class PlayerSession {
         this.killStreak = Math.max(0, killStreak);
     }
 
-    /** 免伤到期时间（epoch millis）；0 表示无保护。 */
     public long protectionUntil() {
         return protectionUntil;
     }
 
+    /** 设置免伤到期时间（epoch millis）；-1 表示永久保护。 */
     public void setProtectionUntil(long protectionUntil) {
         this.protectionUntil = protectionUntil;
     }
@@ -108,7 +108,7 @@ public final class PlayerSession {
     }
 
     public boolean isPlayerProtected() {
-        return arenaId != null && protectionUntil > System.currentTimeMillis();
+        return arenaId != null && (protectionUntil == -1 || protectionUntil > System.currentTimeMillis());
     }
 
     /** 清空与竞技场有关的状态；返回点/快照由调用方先处理。 */

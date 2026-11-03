@@ -121,7 +121,7 @@ public final class ArenaService {
         session.setArenaId(arena.id());
         session.setPreview(false);
         session.setKillStreak(0);
-        session.setProtectionUntil(protectionDeadline());
+        session.setProtectionUntil(-1);
         session.setEdit(null);
 
         resetForArena(player, arena.spawn());
@@ -256,7 +256,7 @@ public final class ArenaService {
         }
         resetForArena(player, arenaOptional.get().spawn());
         giveButtons(player);
-        session.setProtectionUntil(protectionDeadline());
+        session.setProtectionUntil(-1);
         if (settings.deathBlindnessTicks() > 0) {
             player.addPotionEffect(new PotionEffect(
                     PotionEffectType.BLINDNESS, settings.deathBlindnessTicks(), 1));
