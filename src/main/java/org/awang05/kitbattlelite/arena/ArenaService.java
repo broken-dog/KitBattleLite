@@ -158,6 +158,8 @@ public final class ArenaService {
     /**
      * 离场：摘掉 HUD → 恢复快照 → 传回返回点 → 清竞技场字段。
      *
+     * <p> 不负责更新竞技场图标
+     *
      * @param teleport 退服时为 false（离线传送无意义且可能报错）
      */
     public void leave(Player player, boolean teleport) {
