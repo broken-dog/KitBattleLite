@@ -184,7 +184,7 @@ public final class ArenaService {
     }
 
     /**
-     * 死亡处理：统计、清背包（避免职业物品掉落）、清自己射出的末影珍珠、播报。
+     * 死亡处理：统计并落盘、清背包（避免职业物品掉落）、清自己射出的末影珍珠、播报。
      *
      * <p>不在这里传送/给失明——那些放在重生后（{@link #afterRespawn(Player)}），否则会被
      * 死亡流程清掉。
@@ -230,6 +230,7 @@ public final class ArenaService {
         stats.getOrCreate(killer.getUniqueId(), killer.getName()).addKill();
         sidebar.refresh(killer.getUniqueId());
         broadcastKill(arena, victim, killer);
+        stats.save();
     }
 
     /** 重生点：在竞技场里返回出生点，否则空 */
@@ -292,9 +293,12 @@ public final class ArenaService {
      * 导入一个世界作为未开放地图：世界已加载就直接用，未加载则尝试从磁盘加载；重复或世界不存在抛
      * {@link IllegalArgumentException}。
      */
-    public Arena importWorld(String worldName) {
+    public Arena importWorld(String arenaId, String worldName) {
         if (worldName == null || worldName.isBlank()) {
             throw new IllegalArgumentException("世界名不能为空");
+        }
+        if (arenaId == null || arenaId.isBlank()) {
+            throw new IllegalArgumentException("地图 ID 不能为空");
         }
         String name = worldName.trim();
         World world = worldLoader.load(name);
@@ -304,10 +308,10 @@ public final class ArenaService {
         if (arenas.byWorldName(name).isPresent()) {
             throw new IllegalArgumentException("世界 " + name + " 已经是竞技场");
         }
-        if (arenas.find(name).isPresent()) {
-            throw new IllegalArgumentException("地图 id " + name + " 已被占用");
+        if (arenas.find(arenaId).isPresent()) {
+            throw new IllegalArgumentException("地图 id " + arenaId + " 已被占用");
         }
-        Arena arena = new Arena(name, name, name, false, world.getSpawnLocation(), world.getSpawnLocation());
+        Arena arena = new Arena(arenaId, name, name, false, world.getSpawnLocation(), world.getSpawnLocation());
         arenas.register(arena);
         logger.info("已导入地图 " + name);
         return arena;

@@ -1,0 +1,17 @@
+# KitBattleLite 设置项
+
+# 在插件启用时注入各服务，改完请重启服务器（暂不支持热更 config.yml）。
+
+# 选完职业后的免伤秒数，0 = 不保护
+protection-seconds: 3
+
+# 死亡重生后的失明 tick 数，0 = 不失明
+death-blindness-ticks: 40
+
+sidebar:
+  # 是否显示 FastBoard 侧边栏（连杀/击杀/死亡/K-D）
+  enabled: true
+
+health-below-name:
+  # 是否用共享计分板显示玩家名下血量；服上已有 HUD 插件时可关掉
+  enabled: true

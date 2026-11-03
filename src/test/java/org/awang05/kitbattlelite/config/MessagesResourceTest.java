@@ -30,7 +30,6 @@ class MessagesResourceTest {
             "command.unknown",
             "command.usage",
             "command.reloaded",
-            "command.saved",
             "command.open-in-arena",
             "command.leave-not-in-arena",
             "command.button-outside-arena",

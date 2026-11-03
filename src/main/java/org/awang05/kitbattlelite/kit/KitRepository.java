@@ -184,6 +184,7 @@ public final class KitRepository {
                 page.setKitId(ref.position(), null);
             }
         }
+        save();
         return refs.size();
     }
 
@@ -215,6 +216,7 @@ public final class KitRepository {
     public List<String> pruneKits() {
         List<String> removed = new ArrayList<>(unreferencedKitIds());
         removed.forEach(kits::remove);
+        save();
         return removed;
     }
 

@@ -80,6 +80,17 @@ public final class MenuFactory {
         return worldSelectMenu;
     }
 
+    /**
+     * reload 前关闭所有在线玩家打开的插件菜单，并标记为“丢弃改动”。
+     */
+    public void closeOpenMenus() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getOpenInventory().getTopInventory().getHolder() instanceof Menu) {
+                player.closeInventory();
+            }
+        }
+    }
+
     /** 职业页（只读，玩家选择职业）。 */
     public void openKitPage(Player player, int pageIndex) {
         openNextTick(player, () -> new KitPageMenu(plugin, this, kits, items, arenaService, pageIndex));
