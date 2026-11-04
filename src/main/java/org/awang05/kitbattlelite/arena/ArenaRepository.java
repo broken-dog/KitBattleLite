@@ -150,11 +150,6 @@ public final class ArenaRepository {
             logger.info(context + " 未配置，使用世界出生点");
             return fallback;
         }
-        String storedWorld = section.getString("world");
-        if (storedWorld != null && !storedWorld.isBlank() && !storedWorld.trim().equals(world.getName())) {
-            logger.warning(context + " 的 world=" + storedWorld + " 与地图世界 " + world.getName()
-                    + " 不一致，坐标仍按 " + world.getName() + " 读取");
-        }
         double x = section.getDouble("x", fallback.getX());
         double y = section.getDouble("y", fallback.getY());
         double z = section.getDouble("z", fallback.getZ());
