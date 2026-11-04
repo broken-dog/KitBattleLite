@@ -142,6 +142,7 @@ public final class KitBattleLite extends JavaPlugin {
     @Override
     public void onDisable() {
         // 逆序：先摘 HUD，再请出玩家（恢复快照/传回返回点），最后统一落盘
+        menus.closeOpenMenus();
         if (sidebar != null) {
             sidebar.shutdown();
         }

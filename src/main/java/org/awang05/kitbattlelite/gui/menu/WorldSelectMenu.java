@@ -85,12 +85,11 @@ public final class WorldSelectMenu extends Menu {
         if (arena.enabled()) {
             lore.add(Component.text("人数：", NamedTextColor.DARK_PURPLE)
                     .append(Component.text(Integer.toString(count), NamedTextColor.GREEN)));
-            lore.add(Component.text("左键进入", NamedTextColor.YELLOW));
-            Material material = count == 0 ? Material.LIME_STAINED_GLASS_PANE : Material.YELLOW_STAINED_GLASS_PANE;
-            return GuiIcons.of(material, Component.text(arena.displayName(), NamedTextColor.GREEN), lore);
+            lore.add(Component.text("点击进入", NamedTextColor.YELLOW));
+            Material material = count == 0 ? Material.GREEN_STAINED_GLASS_PANE : Material.YELLOW_STAINED_GLASS_PANE;
+            return GuiIcons.of(material, Component.text(arena.displayName()), lore);
         }
         lore.add(Component.text("敬请期待", NamedTextColor.GRAY));
-        lore.add(Component.text("管理员可左键预览", NamedTextColor.DARK_GRAY));
         return GuiIcons.of(Material.BLACK_STAINED_GLASS_PANE,
                 Component.text(arena.displayName()), lore);
     }

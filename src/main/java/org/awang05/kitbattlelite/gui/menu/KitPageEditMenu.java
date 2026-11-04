@@ -63,6 +63,7 @@ public final class KitPageEditMenu extends Menu {
     @Override
     protected void render(Inventory inventory) {
         fillBorder(inventory);
+        clearPageGrid(inventory);
         KitPage page = kits.page(pageIndex);
         if (page != null) {
             for (int position = 0; position < KitPage.SIZE; position++) {
@@ -80,10 +81,7 @@ public final class KitPageEditMenu extends Menu {
         if (previous != null) {
             inventory.setItem(GuiLayout.PAGE_PREV, items.create(PluginItem.PREV));
         }
-        Integer next = kits.nextPage(pageIndex);
-        if (next != null) {
-            inventory.setItem(GuiLayout.PAGE_NEXT, items.create(PluginItem.NEXT));
-        }
+        inventory.setItem(GuiLayout.PAGE_NEXT, items.create(PluginItem.NEXT));  // 编辑页直接允许下一页，若无则新建
         inventory.setItem(GuiLayout.PAGE_INDICATOR, indicator());
     }
 
@@ -124,10 +122,12 @@ public final class KitPageEditMenu extends Menu {
         if (rawSlot == GuiLayout.PAGE_NEXT) {
             event.setCancelled(true);
             Integer next = kits.nextPage(pageIndex);
-            if (next != null) {
-                reconcile(event.getView().getTopInventory());
-                menus.openPageEditor(player, next);
+            // 直接允许下一页，若无则新建
+            if (next == null) {
+                next = pageIndex + 1;
             }
+            reconcile(event.getView().getTopInventory());
+            menus.openPageEditor(player, next);
             return;
         }
         if (rawSlot == GuiLayout.PAGE_INDICATOR) {
