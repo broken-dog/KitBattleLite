@@ -2,6 +2,7 @@ package org.awang05.kitbattlelite.gui.menu;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -82,16 +83,16 @@ public final class WorldSelectMenu extends Menu {
     private ItemStack icon(Arena arena) {
         int count = arenaService.participantCount(arena);
         List<Component> lore = new ArrayList<>(2);
+        Component name = MiniMessage.miniMessage().deserialize(arena.displayName());
         if (arena.enabled()) {
             lore.add(Component.text("人数：", NamedTextColor.DARK_PURPLE)
                     .append(Component.text(Integer.toString(count), NamedTextColor.GREEN)));
             lore.add(Component.text("点击进入", NamedTextColor.YELLOW));
             Material material = count == 0 ? Material.GREEN_STAINED_GLASS_PANE : Material.YELLOW_STAINED_GLASS_PANE;
-            return GuiIcons.of(material, Component.text(arena.displayName()), lore);
+            return GuiIcons.of(material, name, lore);
         }
         lore.add(Component.text("敬请期待", NamedTextColor.GRAY));
-        return GuiIcons.of(Material.BLACK_STAINED_GLASS_PANE,
-                Component.text(arena.displayName()), lore);
+        return GuiIcons.of(Material.BLACK_STAINED_GLASS_PANE, name, lore);
     }
 
     @Override

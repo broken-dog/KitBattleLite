@@ -1,5 +1,6 @@
 package org.awang05.kitbattlelite.command.sub;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -96,7 +97,7 @@ public final class SetWorldCommand implements SubCommand {
         persist();
         // 显示名会改变选择页图标文字
         menus.updateWorldSelectIcon(arena);
-        messages.send(player, "command.setworld-name", "name", name);
+        messages.send(player, "command.setworld-name", "name", MiniMessage.miniMessage().deserialize(name));
     }
 
     private void setEnabled(Player player, Arena arena, String[] args) {
