@@ -186,7 +186,7 @@ public final class ArenaService {
     }
 
     /**
-     * 死亡处理：统计并落盘、清背包（避免职业物品掉落）、清自己射出的末影珍珠、播报。
+     * 死亡处理：统计并落盘、清背包（避免职业物品掉落）、清药水效果、清自己射出的末影珍珠、播报。
      *
      * <p>不在这里传送/给失明——那些放在重生后（{@link #afterRespawn(Player)}），否则会被
      * 死亡流程清掉。
@@ -207,6 +207,7 @@ public final class ArenaService {
         session.setProtectionUntil(0);
         session.setEdit(null);
         clearInventory(victim);
+        victim.clearActivePotionEffects();
         removeEnderPearls(victim);
         victim.setFireTicks(0);
         sidebar.refresh(victim.getUniqueId());

@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.Objects;
 
@@ -91,9 +92,10 @@ public final class Kit {
     }
 
     /**
-     * 把整套内容应用到玩家：装备位 + 副手 + 背包 0..35。
+     * 把整套内容应用到玩家：装备位 + 副手 + 背包 0..35 + 药水效果。
      *
      * <p>空槽会被清空（{@code setItem(slot, null)}），与旧版行为一致。
+     * 药水效果按自定义效果列表逐条以无限时长应用（保留各自等级）；无效果时不动玩家已有状态。
      */
     public void applyTo(Player player) {
         Objects.requireNonNull(player, "player");
@@ -105,6 +107,23 @@ public final class Kit {
         inventory.setItemInOffHand(content(KitSlots.OFFHAND));
         for (int i = 0; i < KitSlots.INVENTORY_SIZE; i++) {
             inventory.setItem(i, content(KitSlots.inventorySlot(i)));
+        }
+        applyPotionEffects(player);
+    }
+
+    /** 按自定义效果列表，用各自的效果类型与等级、以无限时长应用到玩家。 */
+    private void applyPotionEffects(Player player) {
+        if (potion == null) {
+            return;
+        }
+        for (PotionEffect effect : potion.getCustomEffects()) {
+            player.addPotionEffect(new PotionEffect(
+                    effect.getType(),
+                    PotionEffect.INFINITE_DURATION,
+                    effect.getAmplifier(),
+                    effect.isAmbient(),
+                    effect.hasParticles(),
+                    effect.hasIcon()));
         }
     }
 
