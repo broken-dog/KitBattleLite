@@ -26,6 +26,7 @@ import org.awang05.kitbattlelite.item.ItemService;
 import org.awang05.kitbattlelite.kit.KitRepository;
 import org.awang05.kitbattlelite.listener.HealthUpdateListener;
 import org.awang05.kitbattlelite.listener.HotbarButtonListener;
+import org.awang05.kitbattlelite.listener.InventoryListener;
 import org.awang05.kitbattlelite.listener.ItemDropListener;
 import org.awang05.kitbattlelite.listener.PlayerDeathListener;
 import org.awang05.kitbattlelite.listener.PlayerLifecycleListener;
@@ -100,6 +101,7 @@ public final class KitBattleLite extends JavaPlugin {
         pluginManager.registerEvents(new HotbarButtonListener(items, kits, arenaService, menus, messages), this);
         pluginManager.registerEvents(new ItemDropListener(arenaService), this);
         pluginManager.registerEvents(new ProjectileCleanupListener(arenas), this);
+        pluginManager.registerEvents(new InventoryListener(arenas), this);
     }
 
     private void registerCommand() {
