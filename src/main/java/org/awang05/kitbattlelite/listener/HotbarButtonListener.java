@@ -40,7 +40,7 @@ public final class HotbarButtonListener implements Listener {
         this.messages = messages;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
@@ -48,12 +48,13 @@ public final class HotbarButtonListener implements Listener {
         if (!event.getAction().isRightClick()) {
             return;
         }
-        if (interact(event.getPlayer(), event.getItem())) {
+        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+        if (interact(event.getPlayer(), item)) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         // 忽略子类
         if (event instanceof PlayerInteractAtEntityEvent) {
