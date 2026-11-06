@@ -1,5 +1,7 @@
 package org.awang05.kitbattlelite.command.sub;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
 import org.awang05.kitbattlelite.arena.Arena;
@@ -64,13 +66,15 @@ public final class ImportCommand implements SubCommand {
 
     @Override
     public List<String> complete(CommandSender sender, String[] args) {
-        if (args.length > 1) {
+        if (args.length != 2) {
             return List.of();
         }
         List<String> worldNames = new ArrayList<>();
-        for (org.bukkit.World world : org.bukkit.Bukkit.getWorlds()) {
-            worldNames.add(world.getName());
+        for (World world : Bukkit.getWorlds()) {
+            if (arenas.byWorldName(world.getName()).isEmpty()) {
+                worldNames.add(world.getName());
+            }
         }
-        return StringUtil.copyPartialMatches(args.length == 0 ? "" : args[0], worldNames, new ArrayList<>());
+        return StringUtil.copyPartialMatches(args[1], worldNames, new ArrayList<>());
     }
 }
