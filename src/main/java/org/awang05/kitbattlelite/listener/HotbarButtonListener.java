@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -46,25 +48,45 @@ public final class HotbarButtonListener implements Listener {
         if (!event.getAction().isRightClick()) {
             return;
         }
-        ItemStack item = event.getItem();
-        if (item == null || item.getType().isAir() || !items.isPluginItem(item)) {
+        if (interact(event.getPlayer(), event.getItem())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onInteractEntity(PlayerInteractEntityEvent event) {
+        // 忽略子类
+        if (event instanceof PlayerInteractAtEntityEvent) {
             return;
         }
-        Player player = event.getPlayer();
+        if (event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+        if (interact(event.getPlayer(), item)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean interact(Player player, ItemStack item) {
+        if (item == null || item.getType().isAir() || !items.isPluginItem(item)) {
+            return false;
+        }
         if (!arenaService.isInArena(player)) {
             confiscate(player);
-            return;
+            return true;
         }
         if (items.is(item, PluginItem.SELECT)) {
-            event.setCancelled(true);
             Integer firstPage = kits.pageIndexes().stream().findFirst().orElse(null);
             menus.openKitPage(player, firstPage == null ? 1 : firstPage);
+            return true;
         } else if (items.is(item, PluginItem.LEAVE)) {
-            event.setCancelled(true);
             Optional<Arena> arena = arenaService.arenaOf(player);
             arenaService.leave(player, true);
             arena.ifPresent(menus::updateWorldSelectIcon);
+            return true;
         }
+        return false;
     }
 
     /** 竞技场外还拿着按钮：直接没收，避免带出插件物品。 */
