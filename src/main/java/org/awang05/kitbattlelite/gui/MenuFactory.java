@@ -58,11 +58,19 @@ public final class MenuFactory {
         openNextTick(player, this::worldSelectMenu);
     }
 
-    /** 地图选择页整体重渲染（reload 后地图增删或顺序变化时调用）。 */
+    /**
+     * 地图选择页整体重渲染（reload 后地图增删或顺序变化时调用）。
+     *
+     * <p>地图数跨行变化时库存要整体替换，正看着旧库存的玩家拿不到新库存，先关掉他们的菜单。
+     */
     public void refreshWorldSelect() {
-        if (worldSelectMenu != null) {
-            worldSelectMenu.refresh();
+        if (worldSelectMenu == null) {
+            return;
         }
+        if (worldSelectMenu.isSizeStale()) {
+            closeOpenMenus(WorldSelectMenu.class);
+        }
+        worldSelectMenu.refresh();
     }
 
     /** 原地刷新地图选择页里的一张地图图标（进/离场等人数变化后调用）。 */
@@ -84,8 +92,13 @@ public final class MenuFactory {
      * reload 前关闭所有在线玩家打开的插件菜单，并标记为“丢弃改动”。
      */
     public void closeOpenMenus() {
+        closeOpenMenus(Menu.class);
+    }
+
+    /** 关闭在线玩家打开的指定类型的插件菜单（库存尺寸变化需要整体替换前使用）。 */
+    public void closeOpenMenus(Class<? extends Menu> menuType) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getOpenInventory().getTopInventory().getHolder() instanceof Menu) {
+            if (menuType.isInstance(player.getOpenInventory().getTopInventory().getHolder())) {
                 player.closeInventory();
             }
         }

@@ -80,6 +80,18 @@ class GuiLayoutTest {
         assertEquals(GuiLayout.COLUMNS * 5 + 3, GuiLayout.PAGE_PREV);
         assertEquals(GuiLayout.COLUMNS * 5 + 4, GuiLayout.PAGE_INDICATOR);
         assertEquals(GuiLayout.COLUMNS * 5 + 5, GuiLayout.PAGE_NEXT);
-        assertTrue(GuiLayout.WORLD_SLOT_COUNT < GuiLayout.SIZE);
+    }
+
+    @Test
+    void worldSizeRoundsUpToRowsAndCapsAtSix() {
+        assertEquals(9, GuiLayout.worldSize(0));
+        assertEquals(9, GuiLayout.worldSize(-3));
+        assertEquals(9, GuiLayout.worldSize(1));
+        assertEquals(9, GuiLayout.worldSize(9));
+        assertEquals(18, GuiLayout.worldSize(10));
+        assertEquals(45, GuiLayout.worldSize(45));
+        assertEquals(54, GuiLayout.worldSize(46));
+        assertEquals(54, GuiLayout.worldSize(54));
+        assertEquals(54, GuiLayout.worldSize(100));
     }
 }

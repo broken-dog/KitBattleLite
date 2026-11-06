@@ -73,16 +73,26 @@ public abstract class Menu implements InventoryHolder {
     }
 
     /**
-     * 原地重渲染：清空后按当前模型重画同一个库存，不新建菜单实例、不换库存对象。
+     * 原地重渲染：按当前模型重画；库存大小没变时清空重画同一个库存，变了则新建库存替换。
      *
      * <p>用于 {@code /kbl reload} 这类结构性变化（地图增删、顺序调整）；库存还没创建过时什么都不做。
+     * 新建库存不会切走玩家正看着的旧库存，调用方需先关闭旧菜单（见 {@code MenuFactory#refreshWorldSelect()}）。
      */
     public final void refresh() {
         if (inventory == null) {
             return;
         }
-        inventory.clear();
+        if (inventory.getSize() != size()) {
+            inventory = Bukkit.createInventory(this, size(), title());
+        } else {
+            inventory.clear();
+        }
         render(inventory);
+    }
+
+    /** 已有库存的尺寸是否不再匹配当前模型 */
+    public final boolean isSizeStale() {
+        return inventory != null && inventory.getSize() != size();
     }
 
     /** 库存是否已经创建（菜单至少被打开过一次）；增量更新前用它判断。 */

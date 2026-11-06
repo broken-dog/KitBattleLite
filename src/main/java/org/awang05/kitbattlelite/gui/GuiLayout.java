@@ -42,10 +42,20 @@ public final class GuiLayout {
      */
     public static final int POTION_SLOT = 45;
 
-    /** 地图选择页的格子数：5 行 × 9 列 */
-    public static final int WORLD_SLOT_COUNT = COLUMNS * (ROWS - 1);
-
     private GuiLayout() {
+    }
+
+    /**
+     * 地图选择页的库存大小：按地图数向上取整到整行（9 的倍数），最少一行，封顶 {@link #SIZE}。
+     *
+     * @param arenaCount 地图数量，非正数按空菜单处理
+     */
+    public static int worldSize(int arenaCount) {
+        if (arenaCount <= 0) {
+            return COLUMNS;
+        }
+        int rows = (arenaCount + COLUMNS - 1) / COLUMNS;
+        return Math.min(rows * COLUMNS, SIZE);
     }
 
     /**

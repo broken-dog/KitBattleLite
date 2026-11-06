@@ -28,8 +28,10 @@ import java.util.List;
  *
  * <p>生命周期：与其它菜单不同，本菜单由 {@link MenuFactory} 长期持有一个实例（库存惰性创建、反复复用），
  * 因为地图顺序与人数需要实时反映：进退场后调 {@link #updateIcon(Arena)} 原地改一格，
- * {@code /kbl reload} 后用 {@link Menu#refresh()} 整体重画。实例不持有 {@link Player}，
- * 顺序取自 {@link ArenaRegistry} 的注册顺序（{@code arenas.yml} 的书写顺序）。
+ * {@code /kbl reload} 后用 {@link Menu#refresh()} 整体重画；地图数跨行变化时尺寸自适应
+ * （{@link GuiLayout#worldSize(int)}），需要换库存，换前由 {@code MenuFactory} 关掉正在查看的玩家。
+ *
+ * <p>顺序取自 {@link ArenaRegistry} 的注册顺序（{@code arenas.yml} 的书写顺序）。
  */
 public final class WorldSelectMenu extends Menu {
     private final ArenaRegistry arenas;
@@ -48,14 +50,14 @@ public final class WorldSelectMenu extends Menu {
 
     @Override
     protected int size() {
-        return GuiLayout.WORLD_SLOT_COUNT;
+        return GuiLayout.worldSize(arenas.size());
     }
 
     @Override
     protected void render(Inventory inventory) {
         int slot = 0;
         for (Arena arena : arenas.all()) {
-            if (slot >= size()) {
+            if (slot >= inventory.getSize()) {
                 // plugin.getLogger().warning("地图数量超过 " + size()
                 //        + " 个，选择页只显示前 " + size() + " 张（其余用命令进入）");
                 break;
@@ -126,7 +128,7 @@ public final class WorldSelectMenu extends Menu {
 
     /** 第 n 个地图格对应的地图；超出或空槽返回 null。 */
     private Arena arenaAt(int guiSlot) {
-        if (guiSlot < 0 || guiSlot >= size()) {
+        if (guiSlot < 0) {
             return null;
         }
         int index = 0;
