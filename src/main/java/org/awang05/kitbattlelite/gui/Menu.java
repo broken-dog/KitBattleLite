@@ -69,11 +69,7 @@ public abstract class Menu implements InventoryHolder {
     /** 打开菜单：库存惰性创建；同一实例再次打开时复用已有库存。 */
     public final void open(Player player) {
         Objects.requireNonNull(player, "player");
-        if (inventory == null) {
-            inventory = Bukkit.createInventory(this, size(), title());
-            render(inventory);
-        }
-        player.openInventory(inventory);
+        player.openInventory(ensureInventory());
     }
 
     /**
@@ -134,6 +130,15 @@ public abstract class Menu implements InventoryHolder {
 
     @Override
     public final @NotNull Inventory getInventory() {
+        return ensureInventory();
+    }
+
+    /** 惰性建库存：第一次真正需要库存时才创建并渲染，之后复用同一个对象。 */
+    private Inventory ensureInventory() {
+        if (inventory == null) {
+            inventory = Bukkit.createInventory(this, size(), title());
+            render(inventory);
+        }
         return inventory;
     }
 }
