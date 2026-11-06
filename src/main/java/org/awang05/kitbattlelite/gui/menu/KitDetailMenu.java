@@ -71,6 +71,7 @@ public final class KitDetailMenu extends Menu {
                     inventory.setItem(GuiLayout.kitSlot(kitSlot), item);
                 }
             }
+            inventory.setItem(GuiLayout.POTION_SLOT, items.potionDisplay(kit.potion()));
         }
         inventory.setItem(GuiLayout.BACK, items.create(PluginItem.BACK));
     }

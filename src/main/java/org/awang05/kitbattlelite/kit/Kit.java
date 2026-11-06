@@ -7,14 +7,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.Objects;
 
 /**
- * 一个职业：id + 图标 + 41 格内容。
+ * 一个职业：id + 图标 + 41 格内容 + 可选的药水效果。
  *
  * <p>内容下标见 {@link KitSlots}；空槽统一用 {@code null} 表示，不保存 AIR 物品。
  * 所有进出模型的 {@link ItemStack} 都 clone，模型不会把内部实例交给 GUI 或会话。
+ *
+ * <p>药水效果独立于 41 格内容，用一份可空的 {@link PotionMeta} 承载，同样进出 clone。
  *
  * <p>模型本身不持久化，读写由 {@link KitRepository}/{@link KitCodec} 负责。
  */
@@ -22,6 +25,7 @@ public final class Kit {
     private final String id;
     private ItemStack icon;
     private final ItemStack[] contents = new ItemStack[KitSlots.SIZE];
+    private PotionMeta potion;
 
     /**
      * @param id       职业 id（非空、不含空白与点号：它会成为 YAML 键与命令参数）
@@ -51,9 +55,11 @@ public final class Kit {
         return icon.clone();
     }
 
-    /** 深拷贝一份同 id、同图标、同内容的职业，用于编辑工作副本。 */
+    /** 深拷贝一份同 id、同图标、同内容、同药水效果的职业，用于编辑工作副本。 */
     public Kit copy() {
-        return new Kit(id, icon, contents);
+        Kit copy = new Kit(id, icon, contents);
+        copy.potion = potion == null ? null : potion.clone();
+        return copy;
     }
 
     /** 替换图标；传入 null 恢复默认图标。 */
@@ -72,6 +78,16 @@ public final class Kit {
     public void setContent(int slot, ItemStack item) {
         checkSlot(slot);
         contents[slot] = normalize(item);
+    }
+
+    /** 药水效果的副本；未设置返回 null。 */
+    public PotionMeta potion() {
+        return potion == null ? null : potion.clone();
+    }
+
+    /** 写入药水效果；传入 null 表示无效果。 */
+    public void setPotion(PotionMeta potion) {
+        this.potion = potion == null ? null : potion.clone();
     }
 
     /**

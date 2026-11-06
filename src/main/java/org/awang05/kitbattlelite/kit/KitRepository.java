@@ -1,8 +1,11 @@
 package org.awang05.kitbattlelite.kit;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -263,6 +266,7 @@ public final class KitRepository {
                 continue;
             }
             loadContents(kit, kitSection);
+            loadPotion(kit, kitSection);
             kits.put(kit.id(), kit);
         }
     }
@@ -281,6 +285,23 @@ public final class KitRepository {
             if (item != null) {
                 kit.setContent(slot, item);
             }
+        }
+    }
+
+    /**
+     * 读取药水效果：{@code potion} 键存成一个带 {@link PotionMeta} 的 POTION 物品。
+     *
+     * <p>缺字段静默视为无效果；物品损坏会由 {@link KitCodec#read} 记 WARNING 后按无效果处理；
+     * 若存的不是药水（没有 {@link PotionMeta}）同样按无效果处理。
+     */
+    private void loadPotion(Kit kit, ConfigurationSection kitSection) {
+        ItemStack item = codec.read(kitSection, "potion", "kits." + kit.id() + ".potion");
+        if (item == null) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof PotionMeta potion) {
+            kit.setPotion(potion);
         }
     }
 
@@ -374,7 +395,18 @@ public final class KitRepository {
             if (!hasItem) {
                 kitSection.set("contents", null);
             }
+            codec.write(kitSection, "potion", potionItem(kit.potion()));
         }
+    }
+
+    /** 把药水效果包成一个 POTION 物品用于落盘；无效果返回 null（写盘时会移除该键）。 */
+    private static ItemStack potionItem(PotionMeta potion) {
+        if (potion == null) {
+            return null;
+        }
+        ItemStack item = new ItemStack(Material.POTION);
+        item.setItemMeta(potion);
+        return item;
     }
 
     private void saveQuietly(YamlConfiguration config) {

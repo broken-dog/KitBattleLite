@@ -7,6 +7,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.awang05.kitbattlelite.gui.GuiLayout;
 import org.awang05.kitbattlelite.gui.Menu;
@@ -26,7 +28,7 @@ import java.util.Objects;
  * <p>改的是工作副本（{@link Kit}），点保存才写回 {@link KitRepository} 内存；取消/ESC 丢弃。
  * 保存前用 {@code expectedKitId} 校验来源页面槽位没被别人改过，替代旧版的“原物品 equals”比较。
  *
- * <p>点击矩阵：套装 41 格与图标格可放取物品；返回=取消、保存按按钮；其余格子取消；
+ * <p>点击矩阵：套装 41 格、图标格与药水格可放取物品；返回=取消、保存按按钮；其余格子取消；
  * 玩家背包可点击，Shift 点击改写成“放进第一个空格”。
  *
  * <p>生命周期：由 {@link MenuFactory#openKitEditor} 每次打开时新建，关闭即丢弃工作副本。
@@ -79,6 +81,7 @@ public final class KitEditMenu extends Menu {
             }
         }
         inventory.setItem(GuiLayout.KIT_ICON, working.icon());
+        inventory.setItem(GuiLayout.POTION_SLOT, items.potionDisplay(working.potion()));
         inventory.setItem(GuiLayout.BACK, items.create(PluginItem.CANCEL));
         inventory.setItem(GuiLayout.KIT_SAVE, items.create(PluginItem.SAVE));
     }
@@ -108,7 +111,8 @@ public final class KitEditMenu extends Menu {
             menus.openPageEditor(player, pageIndex);
             return;
         }
-        if (rawSlot == GuiLayout.KIT_ICON || GuiLayout.isKitSlot(rawSlot)) {
+        if (rawSlot == GuiLayout.KIT_ICON || rawSlot == GuiLayout.POTION_SLOT
+                || GuiLayout.isKitSlot(rawSlot)) {
             return;
         }
         event.setCancelled(true);
@@ -120,7 +124,8 @@ public final class KitEditMenu extends Menu {
             if (rawSlot >= GuiLayout.SIZE) {
                 continue;
             }
-            if (rawSlot != GuiLayout.KIT_ICON && !GuiLayout.isKitSlot(rawSlot)) {
+            if (rawSlot != GuiLayout.KIT_ICON && rawSlot != GuiLayout.POTION_SLOT
+                    && !GuiLayout.isKitSlot(rawSlot)) {
                 event.setCancelled(true);
                 return;
             }
@@ -141,6 +146,16 @@ public final class KitEditMenu extends Menu {
         if (icon != null && !icon.getType().isAir()) {
             working.setIcon(icon);
         }
+        working.setPotion(potionMetaOf(inventory.getItem(GuiLayout.POTION_SLOT)));
+    }
+
+    /** 取药水格物品的 {@link PotionMeta}；为空或不是药水（无 PotionMeta）时返回 null，视为无效果。 */
+    private static PotionMeta potionMetaOf(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return null;
+        }
+        ItemMeta meta = item.getItemMeta();
+        return meta instanceof PotionMeta potion ? potion : null;
     }
 
     /** 保存：校验来源槽位未变 → 写回仓库 → 回到页面编辑器。 */

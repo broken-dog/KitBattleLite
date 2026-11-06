@@ -36,6 +36,12 @@ public final class GuiLayout {
     public static final int KIT_ICON = 49;
     public static final int KIT_SAVE = 53;
 
+    /**
+     * 药水格：编辑/详情页底行展示药水效果，独立于 41 格职业内容（不属于 {@link KitSlots}）。
+     * 编辑页可放取药水，保存时读取其 {@code PotionMeta}。
+     */
+    public static final int POTION_SLOT = 45;
+
     /** 地图选择页的格子数：5 行 × 9 列 */
     public static final int WORLD_SLOT_COUNT = COLUMNS * (ROWS - 1);
 

@@ -1,11 +1,15 @@
 package org.awang05.kitbattlelite.item;
 
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +53,30 @@ public final class ItemService {
     public ItemStack create(PluginItem type) {
         Objects.requireNonNull(type, "type");
         return tag(type.newDisplay(), type);
+    }
+
+    /**
+     * 现造一瓶用于 GUI 展示的药水。
+     *
+     * <p>不带 PDC 标记（药水格在编辑页是可放取的普通槽）。
+     *
+     * <p> 默认为“平凡的药水”样式，或继承 PotionMeta 的属性。
+     *
+     * @param stored 已保存的药水效果，可为 null
+     * @return 一个新的展示药水实例
+     */
+    public ItemStack potionDisplay(PotionMeta stored) {
+        ItemStack potion = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+        PotionType base = stored == null ? null : stored.getBasePotionType();
+        meta.setBasePotionType(base != null ? base : PotionType.MUNDANE);
+        if (stored != null) {
+            for (PotionEffect effect : stored.getCustomEffects()) {
+                meta.addCustomEffect(effect, true);
+            }
+        }
+        potion.setItemMeta(meta);
+        return potion;
     }
 
     /**
