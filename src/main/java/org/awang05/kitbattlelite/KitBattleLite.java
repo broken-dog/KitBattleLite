@@ -61,6 +61,7 @@ public final class KitBattleLite extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         saveResource(Messages.FILE_NAME, false);
+        saveResource(KitRepository.FILE_NAME, false);
 
         settings = new SettingsService(this);
         messages = new Messages(this);

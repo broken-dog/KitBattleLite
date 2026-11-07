@@ -1,0 +1,260 @@
+version: 1
+pages:
+  '1':
+    slots:
+      '0': kit-1
+      '1': kit-2
+      '2': kit-3
+      '3': kit-4
+kits:
+  kit-1:
+    icon:
+      ==: org.bukkit.inventory.ItemStack
+      v: 3700
+      type: DIAMOND_SWORD
+      meta:
+        ==: ItemMeta
+        meta-type: UNSPECIFIC
+        display-name: '{"text":"","extra":["",{"text":"全能pvp","color":"yellow"}],"italic":false}'
+        lore:
+        - '{"text":"","extra":["",{"text":"是时候展现真正的实力了","italic":true,"color":"dark_purple"}],"italic":false,"color":"white"}'
+    contents:
+      '0':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: IRON_HELMET
+      '1':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: IRON_CHESTPLATE
+      '2':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: IRON_LEGGINGS
+      '3':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: IRON_BOOTS
+      '4':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: SHIELD
+      '5':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: IRON_SWORD
+      '6':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: GOLDEN_APPLE
+        amount: 64
+  kit-2:
+    icon:
+      ==: org.bukkit.inventory.ItemStack
+      v: 3700
+      type: TRIDENT
+      meta:
+        ==: ItemMeta
+        meta-type: UNSPECIFIC
+        display-name: '{"text":"","extra":["",{"text":"海王","color":"aqua"}],"italic":false}'
+        lore:
+        - '{"text":"","extra":["",{"text":"海里的王","color":"dark_green"}],"italic":false,"color":"white"}'
+    contents:
+      '0':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: TURTLE_HELMET
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          display-name: '{"text":"","extra":["",{"text":"“海王从来不给自己戴绿”帽","color":"dark_green"}],"italic":false}'
+      '1':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: CHAINMAIL_CHESTPLATE
+      '2':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: IRON_LEGGINGS
+      '3':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: DIAMOND_BOOTS
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            PROTECTION_FALL: 6
+      '5':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: TRIDENT
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            RIPTIDE: 2
+          Unbreakable: true
+      '6':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: GOLDEN_APPLE
+        amount: 64
+  kit-3:
+    icon:
+      ==: org.bukkit.inventory.ItemStack
+      v: 3700
+      type: ENDER_PEARL
+      meta:
+        ==: ItemMeta
+        meta-type: UNSPECIFIC
+        display-name: '{"text":"","extra":["",{"text":"末影人","color":"dark_purple"}],"italic":false}'
+        lore:
+        - '{"text":"","extra":["",{"text":"你敢直视我的眼睛吗！","color":"dark_gray"}],"italic":false,"color":"white"}'
+    contents:
+      '0':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: NETHERITE_HELMET
+      '1':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: LEATHER_CHESTPLATE
+        meta:
+          ==: ItemMeta
+          meta-type: COLORABLE_ARMOR
+          enchants:
+            PROTECTION_PROJECTILE: 5
+            DURABILITY: 3
+      '2':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: LEATHER_LEGGINGS
+        meta:
+          ==: ItemMeta
+          meta-type: COLORABLE_ARMOR
+          enchants:
+            PROTECTION_PROJECTILE: 5
+            DURABILITY: 3
+      '3':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: LEATHER_BOOTS
+        meta:
+          ==: ItemMeta
+          meta-type: COLORABLE_ARMOR
+          enchants:
+            PROTECTION_FALL: 10
+            PROTECTION_PROJECTILE: 3
+            DURABILITY: 3
+      '5':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: DIAMOND_SWORD
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            DAMAGE_ALL: 3
+      '6':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: GOLDEN_APPLE
+        amount: 64
+      '7':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: ENDER_PEARL
+        amount: 16
+  kit-4:
+    icon:
+      ==: org.bukkit.inventory.ItemStack
+      v: 3700
+      type: CROSSBOW
+      meta:
+        ==: ItemMeta
+        meta-type: CROSSBOW
+        display-name: '{"text":"","extra":["",{"text":"射手","color":"red"}],"italic":false}'
+        lore:
+        - '{"text":"","extra":["",{"text":"射♂爆~你！~","color":"yellow"}],"italic":false,"color":"white"}'
+        enchants:
+          MULTISHOT: 1
+        ItemFlags:
+        - HIDE_ENCHANTS
+        charged: true
+        charged-projectiles:
+        - ==: org.bukkit.inventory.ItemStack
+          v: 3700
+          type: ARROW
+        - ==: org.bukkit.inventory.ItemStack
+          v: 3700
+          type: ARROW
+        - ==: org.bukkit.inventory.ItemStack
+          v: 3700
+          type: ARROW
+    contents:
+      '0':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: NETHERITE_HELMET
+      '1':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: IRON_CHESTPLATE
+        meta:
+          ==: ItemMeta
+          meta-type: ARMOR
+          enchants:
+            BINDING_CURSE: 1
+            PROTECTION_ENVIRONMENTAL: 1
+          attribute-modifiers:
+            GENERIC_MOVEMENT_SPEED:
+            - ==: org.bukkit.attribute.AttributeModifier
+              amount: -0.8
+              name: ''
+              slot: CHEST
+              uuid: e7543571-1d73-4c14-9e35-6fb442b41453
+              operation: 1
+          Unbreakable: true
+      '5':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: CROSSBOW
+        meta:
+          ==: ItemMeta
+          meta-type: CROSSBOW
+          enchants:
+            KNOCKBACK: 2
+            QUICK_CHARGE: 5
+          Unbreakable: true
+          charged: false
+      '6':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: GOLDEN_APPLE
+        amount: 64
+      '7':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: ARROW
+        amount: 64
+      '8':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: ARROW
+        amount: 64
+      '9':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: ARROW
+        amount: 64
+      '10':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: ARROW
+        amount: 64
+      '11':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3700
+        type: ARROW
+        amount: 64
