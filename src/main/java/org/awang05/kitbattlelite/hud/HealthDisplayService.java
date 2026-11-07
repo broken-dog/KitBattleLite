@@ -9,7 +9,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
-import org.awang05.kitbattlelite.config.PluginSettings;
+import org.awang05.kitbattlelite.config.SettingsService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,24 +27,24 @@ import java.util.UUID;
  * 离开时必须 {@code resetScore} 回收条目并恢复主计分板，否则条目只增不减。
  *
  * <p>生命周期：组合根创建；进图 {@link #join(Player)}，受伤/回血 {@link #update(Player)}，
- * 离场/退服 {@link #leave(Player)}，onDisable {@link #shutdown()}。
+ * 离场/退服 {@link #leave(Player)}，reload 后 {@link #applySettings()}，onDisable {@link #shutdown()}。
  */
 public final class HealthDisplayService {
     private static final String OBJECTIVE_NAME = "kbl_health";
     private static final Component OBJECTIVE_TITLE = Component.text("❤", NamedTextColor.RED);
 
-    private final PluginSettings settings;
+    private final SettingsService settings;
     private final Set<UUID> viewers = new HashSet<>();
     private Scoreboard scoreboard;
     private Objective objective;
 
-    public HealthDisplayService(PluginSettings settings) {
+    public HealthDisplayService(SettingsService settings) {
         this.settings = settings;
     }
 
     /** 进图时调用：切到共享计分板并写入当前血量。 */
     public void join(Player player) {
-        if (!settings.healthBelowNameEnabled()) {
+        if (!settings.current().healthBelowNameEnabled()) {
             return;
         }
         ensureObjective();
@@ -75,6 +75,13 @@ public final class HealthDisplayService {
     /** 当前有多少玩家在看这块板（自检/调试用）。 */
     public int size() {
         return viewers.size();
+    }
+
+    /** 设置重读后调用：血量显示被关掉时恢复所有参与者的主板并注销目标；重新打开要等下次进图。 */
+    public void applySettings() {
+        if (!settings.current().healthBelowNameEnabled()) {
+            shutdown();
+        }
     }
 
     /** onDisable 调用：恢复所有在线参与者的主板并注销目标。 */

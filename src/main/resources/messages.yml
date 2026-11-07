@@ -20,8 +20,8 @@ command:
     <yellow>/kbl import \<地图ID> \<世界名> <gray>导入地图（管理员）
     <yellow>/kbl setworld \<name|spawn|teleport|enabled> \<值> <gray>设置当前地图（管理员）
     <yellow>/kbl kit delete \<id> <gray>删除职业；<yellow>/kbl kit prune <gray>清理无引用职业（管理员）
-    <yellow>/kbl reload <gray>重载职业/地图/战绩/文案（管理员）
-  reloaded: "<green>已重载职业、地图、战绩与文案；在线参与者已被请出竞技场"
+    <yellow>/kbl reload <gray>重载设置/职业/地图/战绩/文案（管理员）
+  reloaded: "<green>已重载设置、职业、地图、战绩与文案；在线参与者已被请出竞技场"
   open-in-arena: "<red>你已经在竞技场里了"
   leave-not-in-arena: "<red>你现在不在竞技场里"
   button-outside-arena: "<red>你咋带出来的？没收（"

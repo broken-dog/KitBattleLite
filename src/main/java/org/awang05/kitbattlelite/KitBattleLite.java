@@ -17,7 +17,7 @@ import org.awang05.kitbattlelite.command.sub.OpenCommand;
 import org.awang05.kitbattlelite.command.sub.ReloadCommand;
 import org.awang05.kitbattlelite.command.sub.SetWorldCommand;
 import org.awang05.kitbattlelite.config.Messages;
-import org.awang05.kitbattlelite.config.PluginSettings;
+import org.awang05.kitbattlelite.config.SettingsService;
 import org.awang05.kitbattlelite.gui.MenuFactory;
 import org.awang05.kitbattlelite.gui.MenuListener;
 import org.awang05.kitbattlelite.hud.HealthDisplayService;
@@ -44,7 +44,7 @@ import java.util.List;
  * {@code load} 里。没有静态状态，插件实例只由 Bukkit 持有。
  */
 public final class KitBattleLite extends JavaPlugin {
-    private PluginSettings settings;
+    private SettingsService settings;
     private Messages messages;
     private ItemService items;
     private KitRepository kits;
@@ -62,7 +62,7 @@ public final class KitBattleLite extends JavaPlugin {
         saveDefaultConfig();
         saveResource(Messages.FILE_NAME, false);
 
-        settings = PluginSettings.load(getConfig());
+        settings = new SettingsService(this);
         messages = new Messages(this);
         items = new ItemService(this);
 
@@ -126,17 +126,19 @@ public final class KitBattleLite extends JavaPlugin {
     /**
      * {@code /kbl reload} 的全部流程。
      *
-     * <p>顺序：先关闭所有插件菜单，再请出在线参与者，然后重读四个数据文件并重画地图选择页。
-     *
-     * <p>config.yml 的数值在启用时注入服务，热重载不覆盖（需重启，已写在 config.yml 注释里）。
+     * <p>顺序：先关闭所有插件菜单，再请出在线参与者，然后重读 config/messages 与三个数据文件，
+     * 收尾两个 HUD 开关并重画地图选择页。
      */
     private void reloadAll() {
         menus.closeOpenMenus();
         arenaService.kickAll();
+        settings.reload();
         kits.load();
         arenaRepository.loadInto(arenas);
         stats.load();
         messages.reload();
+        sidebar.applySettings();
+        health.applySettings();
         menus.refreshWorldSelect();
         getLogger().info("重载完成：职业 " + kits.kitCount() + " 个、地图 " + arenas.size() + " 张");
     }

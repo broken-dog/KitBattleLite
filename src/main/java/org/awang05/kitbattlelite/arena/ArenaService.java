@@ -17,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.awang05.kitbattlelite.config.Messages;
-import org.awang05.kitbattlelite.config.PluginSettings;
+import org.awang05.kitbattlelite.config.SettingsService;
 import org.awang05.kitbattlelite.hud.HealthDisplayService;
 import org.awang05.kitbattlelite.hud.SidebarService;
 import org.awang05.kitbattlelite.item.ItemService;
@@ -45,7 +45,7 @@ public final class ArenaService {
     private final StatsRepository stats;
     private final KitRepository kits;
     private final ItemService items;
-    private final PluginSettings settings;
+    private final SettingsService settings;
     private final Messages messages;
     private final WorldLoader worldLoader;
     private final SidebarService sidebar;
@@ -53,7 +53,7 @@ public final class ArenaService {
 
     public ArenaService(JavaPlugin plugin, ArenaRegistry arenas, SessionRegistry sessions,
                         StatsRepository stats, KitRepository kits, ItemService items,
-                        PluginSettings settings, Messages messages, WorldLoader worldLoader,
+                        SettingsService settings, Messages messages, WorldLoader worldLoader,
                         SidebarService sidebar, HealthDisplayService health) {
         this.logger = plugin.getLogger();
         this.arenas = arenas;
@@ -258,9 +258,9 @@ public final class ArenaService {
         resetForArena(player, arenaOptional.get().spawn());
         giveButtons(player);
         session.setProtectionUntil(-1);
-        if (settings.deathBlindnessTicks() > 0) {
-            player.addPotionEffect(new PotionEffect(
-                    PotionEffectType.BLINDNESS, settings.deathBlindnessTicks(), 1));
+        int blindnessTicks = settings.current().deathBlindnessTicks();
+        if (blindnessTicks > 0) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindnessTicks, 1));
         }
         sidebar.refresh(player.getUniqueId());
         health.update(player);
@@ -422,7 +422,7 @@ public final class ArenaService {
     }
 
     private long protectionDeadline() {
-        return System.currentTimeMillis() + settings.protectionSeconds() * 1000L;
+        return System.currentTimeMillis() + settings.current().protectionSeconds() * 1000L;
     }
 
     private static double maxHealth(Player player) {

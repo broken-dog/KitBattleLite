@@ -1,6 +1,6 @@
 # KitBattleLite 设置项
 
-# 在插件启用时注入各服务，改完请重启服务器（暂不支持热更 config.yml）。
+# 在插件启用时读取，改完执行 /kbl reload 即可热重载，无需重启。
 
 # 选完职业后的免伤秒数，0 = 不保护
 protection-seconds: 3

@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.awang05.kitbattlelite.config.Messages;
-import org.awang05.kitbattlelite.config.PluginSettings;
+import org.awang05.kitbattlelite.config.SettingsService;
 import org.awang05.kitbattlelite.player.PlayerProfile;
 import org.awang05.kitbattlelite.player.PlayerSession;
 import org.awang05.kitbattlelite.player.SessionRegistry;
@@ -28,16 +28,16 @@ import java.util.UUID;
  * 文案全部来自 {@link Messages}，这里只做取值与拼接。
  *
  * <p>生命周期：组合根创建；进图 {@link #show(Player)}，状态变化 {@link #refresh(UUID)}，
- * 离场/退服 {@link #hide(UUID)}，onDisable {@link #shutdown()}。
+ * 离场/退服 {@link #hide(UUID)}，reload 后 {@link #applySettings()}，onDisable {@link #shutdown()}。
  */
 public final class SidebarService {
-    private final PluginSettings settings;
+    private final SettingsService settings;
     private final Messages messages;
     private final SessionRegistry sessions;
     private final StatsRepository stats;
     private final Map<UUID, FastBoard> boards = new HashMap<>();
 
-    public SidebarService(PluginSettings settings, Messages messages, SessionRegistry sessions,
+    public SidebarService(SettingsService settings, Messages messages, SessionRegistry sessions,
                           StatsRepository stats) {
         this.settings = settings;
         this.messages = messages;
@@ -47,7 +47,7 @@ public final class SidebarService {
 
     /** 进图时调用；同一玩家重复调用只会刷新内容。 */
     public void show(Player player) {
-        if (!settings.sidebarEnabled()) {
+        if (!settings.current().sidebarEnabled()) {
             return;
         }
         FastBoard board = boards.computeIfAbsent(player.getUniqueId(), id -> new FastBoard(player));
@@ -84,6 +84,13 @@ public final class SidebarService {
     /** 当前有几块板（自检/调试用）。 */
     public int size() {
         return boards.size();
+    }
+
+    /** 设置重读后调用：侧边栏被关掉时立刻摘掉所有板；重新打开要等玩家下次进图。 */
+    public void applySettings() {
+        if (!settings.current().sidebarEnabled()) {
+            shutdown();
+        }
     }
 
     /** onDisable 调用：删掉所有板。 */

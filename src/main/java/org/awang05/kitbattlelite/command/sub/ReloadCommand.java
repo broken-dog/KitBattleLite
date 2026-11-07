@@ -8,7 +8,7 @@ import org.awang05.kitbattlelite.gui.MenuFactory;
 import java.util.Objects;
 
 /**
- * {@code /kbl reload}：重读职业/地图/战绩/文案，并把在线参与者请出竞技场（管理员）。
+ * {@code /kbl reload}：重读设置/职业/地图/战绩/文案，并把在线参与者请出竞技场（管理员）。
  *
  * <p>具体流程放在组合根（它才拥有全部服务与 {@code MenuFactory}），命令只负责触发与回消息。
  *
