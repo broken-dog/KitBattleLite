@@ -1,6 +1,7 @@
 package org.awang05.kitbattlelite.gui;
 
 import org.awang05.kitbattlelite.arena.Arena;
+import org.awang05.kitbattlelite.arena.ArenaCombatService;
 import org.awang05.kitbattlelite.arena.ArenaRegistry;
 import org.awang05.kitbattlelite.arena.ArenaService;
 import org.awang05.kitbattlelite.gui.menu.KitDetailMenu;
@@ -38,6 +39,7 @@ public final class MenuFactory {
     private final JavaPlugin plugin;
     private final ArenaRegistry arenas;
     private final ArenaService arenaService;
+    private final ArenaCombatService combatService;
     private final KitRepository kits;
     private final ItemService items;
 
@@ -45,10 +47,11 @@ public final class MenuFactory {
     private WorldSelectMenu worldSelectMenu;
 
     public MenuFactory(JavaPlugin plugin, ArenaRegistry arenas, ArenaService arenaService,
-                       KitRepository kits, ItemService items) {
+                       ArenaCombatService combatService, KitRepository kits, ItemService items) {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
         this.arenas = Objects.requireNonNull(arenas, "arenas");
         this.arenaService = Objects.requireNonNull(arenaService, "arenaService");
+        this.combatService = Objects.requireNonNull(combatService, "combatService");
         this.kits = Objects.requireNonNull(kits, "kits");
         this.items = Objects.requireNonNull(items, "items");
     }
@@ -106,7 +109,7 @@ public final class MenuFactory {
 
     /** 职业页（只读，玩家选择职业）。 */
     public void openKitPage(Player player, int pageIndex) {
-        openNextTick(player, () -> new KitPageMenu(plugin, this, kits, items, arenaService, pageIndex));
+        openNextTick(player, () -> new KitPageMenu(plugin, this, kits, items, combatService, pageIndex));
     }
 
     /** 职业详情（只读）。 */

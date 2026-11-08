@@ -42,7 +42,7 @@ class PlayerSessionTest {
 
         assertNull(session.arenaId());
         assertEquals(0, session.killStreak());
-        assertEquals(0, session.protectionUntil());
+        assertEquals(PlayerSession.PROTECTION_NONE, session.protectionUntil());
         assertNull(session.edit());
         assertNotNull(session.returnLocation());
     }
@@ -66,8 +66,28 @@ class PlayerSessionTest {
     void protectionUntilCanBeSetToNegativeForPermanentProtection() {
         PlayerSession session = new PlayerSession(ID);
         session.setArenaId("arena");
-        session.setProtectionUntil(-1);
-        assertEquals(-1, session.protectionUntil());
+        session.setProtectionUntil(PlayerSession.PROTECTION_PERMANENT);
+        assertEquals(PlayerSession.PROTECTION_PERMANENT, session.protectionUntil());
         assertTrue(session.isPlayerProtected());
+    }
+
+    @Test
+    void protectionNoneAndExpiredTimestampMeanNotProtected() {
+        PlayerSession session = new PlayerSession(ID);
+        session.setArenaId("arena");
+
+        session.setProtectionUntil(PlayerSession.PROTECTION_NONE);
+        assertFalse(session.isPlayerProtected());
+
+        session.setProtectionUntil(System.currentTimeMillis() - 1);
+        assertFalse(session.isPlayerProtected());
+    }
+
+    @Test
+    void permanentProtectionStillRequiresAnArena() {
+        PlayerSession session = new PlayerSession(ID);
+        session.setProtectionUntil(PlayerSession.PROTECTION_PERMANENT);
+
+        assertFalse(session.isPlayerProtected());
     }
 }

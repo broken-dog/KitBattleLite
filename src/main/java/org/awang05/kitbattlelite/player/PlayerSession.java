@@ -10,6 +10,12 @@ import java.util.UUID;
  * <p>持有 UUID 与会话数据；退服时由 {@code SessionRegistry} 移除，离场时清空竞技场字段。
  */
 public final class PlayerSession {
+    /** 免伤到期值：一直保护（进图后到选职业前）。 */
+    public static final long PROTECTION_PERMANENT = -1L;
+
+    /** 免伤到期值：不保护（死亡、管理员预览、已离场）。 */
+    public static final long PROTECTION_NONE = 0L;
+
     /**
      * 正在编辑的页面槽位。
      *
@@ -94,7 +100,11 @@ public final class PlayerSession {
         return protectionUntil;
     }
 
-    /** 设置免伤到期时间（epoch millis）；-1 表示永久保护。 */
+    /**
+     * 设置免伤到期时间（epoch millis）。
+     *
+     * <p>用 {@link #PROTECTION_PERMANENT} 表示一直保护，{@link #PROTECTION_NONE} 表示不保护。
+     */
     public void setProtectionUntil(long protectionUntil) {
         this.protectionUntil = protectionUntil;
     }
@@ -108,7 +118,8 @@ public final class PlayerSession {
     }
 
     public boolean isPlayerProtected() {
-        return arenaId != null && (protectionUntil == -1 || protectionUntil > System.currentTimeMillis());
+        return arenaId != null
+                && (protectionUntil == PROTECTION_PERMANENT || protectionUntil > System.currentTimeMillis());
     }
 
     /** 清空与竞技场有关的状态；返回点/快照由调用方先处理。 */
@@ -116,7 +127,7 @@ public final class PlayerSession {
         arenaId = null;
         preview = false;
         killStreak = 0;
-        protectionUntil = 0;
+        protectionUntil = PROTECTION_NONE;
         edit = null;
     }
 }

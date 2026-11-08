@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.awang05.kitbattlelite.arena.ArenaService;
+import org.awang05.kitbattlelite.arena.ArenaCombatService;
 import org.awang05.kitbattlelite.gui.GuiIcons;
 import org.awang05.kitbattlelite.gui.GuiLayout;
 import org.awang05.kitbattlelite.gui.Menu;
@@ -34,16 +34,16 @@ public final class KitPageMenu extends Menu {
     private final MenuFactory menus;
     private final KitRepository kits;
     private final ItemService items;
-    private final ArenaService arenaService;
+    private final ArenaCombatService combatService;
     private final int pageIndex;
 
     public KitPageMenu(JavaPlugin plugin, MenuFactory menus, KitRepository kits, ItemService items,
-                       ArenaService arenaService, int pageIndex) {
+                       ArenaCombatService combatService, int pageIndex) {
         super(plugin);
         this.menus = menus;
         this.kits = kits;
         this.items = items;
-        this.arenaService = arenaService;
+        this.combatService = combatService;
         this.pageIndex = pageIndex;
     }
 
@@ -138,7 +138,7 @@ public final class KitPageMenu extends Menu {
         runNextTick(player.getUniqueId(), online -> {
             online.closeInventory();
             try {
-                if (!arenaService.selectKit(online, kitId)) {
+                if (!combatService.selectKit(online, kitId)) {
                     online.sendMessage(Component.text("不在竞技场里，不能选择职业", NamedTextColor.RED));
                 }
             } catch (IllegalArgumentException e) {

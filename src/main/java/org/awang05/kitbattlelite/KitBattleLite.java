@@ -3,6 +3,8 @@ package org.awang05.kitbattlelite;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.awang05.kitbattlelite.arena.ArenaCombatService;
+import org.awang05.kitbattlelite.arena.ArenaImportService;
 import org.awang05.kitbattlelite.arena.ArenaRegistry;
 import org.awang05.kitbattlelite.arena.ArenaRepository;
 import org.awang05.kitbattlelite.arena.ArenaService;
@@ -59,6 +61,8 @@ public final class KitBattleLite extends JavaPlugin {
     private HealthDisplayService health;
     private MushroomStewService stews;
     private ArenaService arenaService;
+    private ArenaCombatService arenaCombatService;
+    private ArenaImportService arenaImportService;
     private MenuFactory menus;
 
     @Override
@@ -86,9 +90,11 @@ public final class KitBattleLite extends JavaPlugin {
         sidebar = new SidebarService(settings, messages, sessions, stats);
         health = new HealthDisplayService(settings);
         stews = new MushroomStewService(items, settings);
-        arenaService = new ArenaService(this, arenas, sessions, stats, kits, items, settings, messages,
-                worldLoader, sidebar, health, stews);
-        menus = new MenuFactory(this, arenas, arenaService, kits, items);
+        arenaService = new ArenaService(this, arenas, sessions, items, sidebar, health);
+        arenaCombatService = new ArenaCombatService(arenaService, stats, kits, settings, messages,
+                sidebar, health, stews);
+        arenaImportService = new ArenaImportService(this, arenas, worldLoader);
+        menus = new MenuFactory(this, arenas, arenaService, arenaCombatService, kits, items);
 
         registerListeners();
         registerCommand();
@@ -101,7 +107,7 @@ public final class KitBattleLite extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new MenuListener(), this);
         pluginManager.registerEvents(new PlayerLifecycleListener(sessions, arenaService, menus), this);
-        pluginManager.registerEvents(new PlayerDeathListener(this, arenaService), this);
+        pluginManager.registerEvents(new PlayerDeathListener(this, arenaService, arenaCombatService), this);
         pluginManager.registerEvents(new ProtectionListener(arenaService), this);
         pluginManager.registerEvents(new HealthUpdateListener(this, health), this);
         pluginManager.registerEvents(new HotbarButtonListener(items, kits, arenaService, menus, messages), this);
@@ -122,7 +128,7 @@ public final class KitBattleLite extends JavaPlugin {
                 new OpenCommand(arenaService, menus, messages),
                 new LeaveCommand(arenaService, menus, messages),
                 new EditCommand(menus, kits, messages),
-                new ImportCommand(arenaService, arenas, arenaRepository, menus, messages),
+                new ImportCommand(arenaImportService, arenas, arenaRepository, menus, messages),
                 new SetWorldCommand(arenas, arenaRepository, menus, messages),
                 new KitCommand(kits, messages, getLogger()),
                 new ReloadCommand(messages, this::reloadAll));

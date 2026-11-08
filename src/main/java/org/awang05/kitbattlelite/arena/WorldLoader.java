@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * <p>只在主线程调用（{@code createWorld()} 会改动服务端的世界表）。
  *
- * <p>生命周期：组合根创建，注入 {@link ArenaRepository} 与 {@link ArenaService}；无状态。
+ * <p>生命周期：组合根创建，注入 {@link ArenaRepository} 与 {@link ArenaImportService}；无状态。
  */
 public final class WorldLoader {
     private final Logger logger;
