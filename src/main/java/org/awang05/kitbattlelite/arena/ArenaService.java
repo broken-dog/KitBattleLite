@@ -21,6 +21,7 @@ import org.awang05.kitbattlelite.config.SettingsService;
 import org.awang05.kitbattlelite.hud.HealthDisplayService;
 import org.awang05.kitbattlelite.hud.SidebarService;
 import org.awang05.kitbattlelite.item.ItemService;
+import org.awang05.kitbattlelite.item.MushroomStewService;
 import org.awang05.kitbattlelite.item.PluginItem;
 import org.awang05.kitbattlelite.kit.Kit;
 import org.awang05.kitbattlelite.kit.KitRepository;
@@ -50,11 +51,12 @@ public final class ArenaService {
     private final WorldLoader worldLoader;
     private final SidebarService sidebar;
     private final HealthDisplayService health;
+    private final MushroomStewService stews;
 
     public ArenaService(JavaPlugin plugin, ArenaRegistry arenas, SessionRegistry sessions,
                         StatsRepository stats, KitRepository kits, ItemService items,
                         SettingsService settings, Messages messages, WorldLoader worldLoader,
-                        SidebarService sidebar, HealthDisplayService health) {
+                        SidebarService sidebar, HealthDisplayService health, MushroomStewService stews) {
         this.logger = plugin.getLogger();
         this.arenas = arenas;
         this.sessions = sessions;
@@ -66,6 +68,7 @@ public final class ArenaService {
         this.worldLoader = worldLoader;
         this.sidebar = sidebar;
         this.health = health;
+        this.stews = stews;
     }
 
     public PlayerSession session(Player player) {
@@ -267,7 +270,7 @@ public final class ArenaService {
     }
 
     /**
-     * 选择职业：应用套装 → 传送到战斗点 → 重新计时免伤。
+     * 选择职业：应用套装 → 打防堆叠标记 → 传送到战斗点 → 重新计时免伤。
      *
      * @return false 表示不在竞技场
      * @throws IllegalArgumentException 职业不存在
@@ -287,6 +290,7 @@ public final class ArenaService {
         }
         player.teleport(arena.get().teleport());
         kit.get().applyTo(player);
+        stews.markApplied(player);
         session.setProtectionUntil(protectionDeadline());
         sidebar.refresh(player.getUniqueId());
         return true;

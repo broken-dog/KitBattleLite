@@ -9,19 +9,24 @@ import java.util.Objects;
  *
  * <p>只做读取与范围兜底，不持有 Bukkit 对象；热重载时重新 {@link #load(FileConfiguration)} 即可。
  *
- * @param protectionSeconds      选完职业后的免伤秒数，0 表示不保护
- * @param deathBlindnessTicks    死亡重生后的失明 tick 数，0 表示不失明
- * @param sidebarEnabled         是否显示 FastBoard 侧边栏
- * @param healthBelowNameEnabled 是否用共享计分板显示玩家名下血量
+ * @param protectionSeconds       选完职业后的免伤秒数，0 表示不保护
+ * @param deathBlindnessTicks     死亡重生后的失明 tick 数，0 表示不失明
+ * @param sidebarEnabled          是否显示 FastBoard 侧边栏
+ * @param healthBelowNameEnabled  是否用共享计分板显示玩家名下血量
+ * @param mushroomStewEnabled     是否启用蘑菇煲回血道具
+ * @param mushroomStewHealAmount  每次右键蘑菇煲恢复的血量点数
  */
 public record PluginSettings(
         int protectionSeconds,
         int deathBlindnessTicks,
         boolean sidebarEnabled,
-        boolean healthBelowNameEnabled
+        boolean healthBelowNameEnabled,
+        boolean mushroomStewEnabled,
+        double mushroomStewHealAmount
 ) {
     public static final int DEFAULT_PROTECTION_SECONDS = 3;
     public static final int DEFAULT_DEATH_BLINDNESS_TICKS = 40;
+    public static final double DEFAULT_MUSHROOM_STEW_HEAL_AMOUNT = 6.0;
 
     public PluginSettings {
         if (protectionSeconds < 0) {
@@ -29,6 +34,9 @@ public record PluginSettings(
         }
         if (deathBlindnessTicks < 0) {
             throw new IllegalArgumentException("deathBlindnessTicks 不能为负: " + deathBlindnessTicks);
+        }
+        if (mushroomStewHealAmount < 0) {
+            throw new IllegalArgumentException("mushroomStewHealAmount 不能为负: " + mushroomStewHealAmount);
         }
     }
 
@@ -39,7 +47,10 @@ public record PluginSettings(
                 Math.max(0, config.getInt("protection-seconds", DEFAULT_PROTECTION_SECONDS)),
                 Math.max(0, config.getInt("death-blindness-ticks", DEFAULT_DEATH_BLINDNESS_TICKS)),
                 config.getBoolean("sidebar.enabled", true),
-                config.getBoolean("health-below-name.enabled", true)
+                config.getBoolean("health-below-name.enabled", true),
+                config.getBoolean("mushroom-stew.enabled", true),
+                Math.max(0.0, config.getDouble("mushroom-stew.heal-amount",
+                        DEFAULT_MUSHROOM_STEW_HEAL_AMOUNT))
         );
     }
 }

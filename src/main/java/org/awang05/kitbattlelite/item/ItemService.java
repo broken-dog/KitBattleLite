@@ -15,25 +15,30 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * 插件物品的工厂与识别器：所有 PDC 读写都集中在这里。
  *
- * <p>两个 key 都挂在本插件的命名空间下（当前为 {@code kitbattlelite:item} / {@code kitbattlelite:kit}），
- * 而不是固定字符串命名空间：本插件不把 PDC 身份当作持久化协议，按钮与图标都是运行时现造、
- * 重启后重新打标，插件改名时旧物品退化为普通物品是可接受的。
+ * <p>三个 key 都挂在本插件的命名空间下（当前为 {@code kitbattlelite:item} / {@code kitbattlelite:kit}
+ * / {@code kitbattlelite:stew}），而不是固定字符串命名空间：本插件不把 PDC 身份当作持久化协议，
+ * 按钮与图标都是运行时现造、重启后重新打标，插件改名时旧物品退化为普通物品是可接受的。
+ *
+ * <p>蘑菇煲用的是独立的 {@code stew} key，每次打标写入不同的 UUID，只用来阻止堆叠并识别“本插件发过的蘑菇煲”。
  *
  * <p>生命周期：由组合根创建一次并注入；无内部可变状态（{@code byId} 构建后只读）。
  */
 public final class ItemService {
     private final NamespacedKey itemKey;
     private final NamespacedKey kitKey;
+    private final NamespacedKey stewKey;
     private final Map<String, PluginItem> byId;
 
     public ItemService(JavaPlugin plugin) {
         Objects.requireNonNull(plugin, "plugin");
         this.itemKey = new NamespacedKey(plugin, "item");
         this.kitKey = new NamespacedKey(plugin, "kit");
+        this.stewKey = new NamespacedKey(plugin, "stew");
         this.byId = buildIdMap();
     }
 
@@ -113,6 +118,35 @@ public final class ItemService {
         container.set(kitKey, PersistentDataType.STRING, kitId.trim());
         icon.setItemMeta(meta);
         return icon;
+    }
+
+    /**
+     * 给蘑菇煲打上唯一的防堆叠标记：每次调用写入不同的 UUID，因此打过的蘑菇煲之间不可堆叠。
+     *
+     * <p><b>会修改传入实例</b>并返回同一实例；用法同 {@link #tag(ItemStack, PluginItem)}。
+     *
+     * @throws IllegalArgumentException 传入 null、空气或不是蘑菇煲的材质
+     * @throws IllegalStateException    物品没有 ItemMeta
+     */
+    public ItemStack markMushroomStew(ItemStack item) {
+        if (item == null || item.getType() != Material.MUSHROOM_STEW) {
+            throw new IllegalArgumentException("只有蘑菇煲可以打防堆叠标记，实际 "
+                    + (item == null ? "null" : item.getType()));
+        }
+        ItemMeta meta = requireMeta(item);
+        meta.getPersistentDataContainer().set(stewKey, PersistentDataType.STRING, UUID.randomUUID().toString());
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    /** 是否是带本插件防堆叠标记的蘑菇煲（原版自然获得的蘑菇煲返回 false）。 */
+    public boolean isMushroomStew(ItemStack item) {
+        if (item == null || item.getType() != Material.MUSHROOM_STEW) {
+            return false;
+        }
+        ItemMeta meta = item.getItemMeta();
+        return meta != null
+                && meta.getPersistentDataContainer().has(stewKey, PersistentDataType.STRING);
     }
 
     /** 识别物品类型；不是本插件物品、或 id 未注册时返回空。 */

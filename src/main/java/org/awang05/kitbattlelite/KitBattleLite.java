@@ -23,11 +23,13 @@ import org.awang05.kitbattlelite.gui.MenuListener;
 import org.awang05.kitbattlelite.hud.HealthDisplayService;
 import org.awang05.kitbattlelite.hud.SidebarService;
 import org.awang05.kitbattlelite.item.ItemService;
+import org.awang05.kitbattlelite.item.MushroomStewService;
 import org.awang05.kitbattlelite.kit.KitRepository;
 import org.awang05.kitbattlelite.listener.HealthUpdateListener;
 import org.awang05.kitbattlelite.listener.HotbarButtonListener;
 import org.awang05.kitbattlelite.listener.InventoryListener;
 import org.awang05.kitbattlelite.listener.ItemDropListener;
+import org.awang05.kitbattlelite.listener.MushroomStewListener;
 import org.awang05.kitbattlelite.listener.PlayerDeathListener;
 import org.awang05.kitbattlelite.listener.PlayerLifecycleListener;
 import org.awang05.kitbattlelite.listener.ProjectileCleanupListener;
@@ -54,6 +56,7 @@ public final class KitBattleLite extends JavaPlugin {
     private StatsRepository stats;
     private SidebarService sidebar;
     private HealthDisplayService health;
+    private MushroomStewService stews;
     private ArenaService arenaService;
     private MenuFactory menus;
 
@@ -81,8 +84,9 @@ public final class KitBattleLite extends JavaPlugin {
 
         sidebar = new SidebarService(settings, messages, sessions, stats);
         health = new HealthDisplayService(settings);
+        stews = new MushroomStewService(items, settings);
         arenaService = new ArenaService(this, arenas, sessions, stats, kits, items, settings, messages,
-                worldLoader, sidebar, health);
+                worldLoader, sidebar, health, stews);
         menus = new MenuFactory(this, arenas, arenaService, kits, items);
 
         registerListeners();
@@ -100,7 +104,8 @@ public final class KitBattleLite extends JavaPlugin {
         pluginManager.registerEvents(new ProtectionListener(arenaService), this);
         pluginManager.registerEvents(new HealthUpdateListener(this, health), this);
         pluginManager.registerEvents(new HotbarButtonListener(items, kits, arenaService, menus, messages), this);
-        pluginManager.registerEvents(new ItemDropListener(arenaService), this);
+        pluginManager.registerEvents(new MushroomStewListener(arenaService, stews), this);
+        pluginManager.registerEvents(new ItemDropListener(this, arenaService, stews), this);
         pluginManager.registerEvents(new ProjectileCleanupListener(arenas), this);
         pluginManager.registerEvents(new InventoryListener(arenas), this);
     }

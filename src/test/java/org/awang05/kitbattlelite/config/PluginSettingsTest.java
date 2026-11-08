@@ -18,6 +18,8 @@ class PluginSettingsTest {
         assertEquals(40, settings.deathBlindnessTicks());
         assertTrue(settings.sidebarEnabled());
         assertTrue(settings.healthBelowNameEnabled());
+        assertTrue(settings.mushroomStewEnabled());
+        assertEquals(6.0, settings.mushroomStewHealAmount());
     }
 
     @Test
@@ -29,7 +31,10 @@ class PluginSettingsTest {
                 "sidebar:",
                 "  enabled: false",
                 "health-below-name:",
-                "  enabled: false"));
+                "  enabled: false",
+                "mushroom-stew:",
+                "  enabled: false",
+                "  heal-amount: 4.5"));
 
         PluginSettings settings = PluginSettings.load(config);
 
@@ -37,6 +42,8 @@ class PluginSettingsTest {
         assertEquals(60, settings.deathBlindnessTicks());
         assertFalse(settings.sidebarEnabled());
         assertFalse(settings.healthBelowNameEnabled());
+        assertFalse(settings.mushroomStewEnabled());
+        assertEquals(4.5, settings.mushroomStewHealAmount());
     }
 
     @Test
@@ -44,11 +51,14 @@ class PluginSettingsTest {
         YamlConfiguration config = new YamlConfiguration();
         config.loadFromString(String.join("\n",
                 "protection-seconds: -5",
-                "death-blindness-ticks: -1"));
+                "death-blindness-ticks: -1",
+                "mushroom-stew:",
+                "  heal-amount: -2"));
 
         PluginSettings settings = PluginSettings.load(config);
 
         assertEquals(0, settings.protectionSeconds());
         assertEquals(0, settings.deathBlindnessTicks());
+        assertEquals(0.0, settings.mushroomStewHealAmount());
     }
 }
