@@ -25,3 +25,7 @@ mushroom-stew:
   # 每次右键恢复的血量点数。
   # 填 0 或负数视为整套效果关闭。
   heal-amount: 6.0
+
+food-retention:
+  # 是否在竞技场内维持玩家饱食度不下降
+  enabled: true

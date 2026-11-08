@@ -20,6 +20,7 @@ class PluginSettingsTest {
         assertTrue(settings.healthBelowNameEnabled());
         assertTrue(settings.mushroomStewEnabled());
         assertEquals(6.0, settings.mushroomStewHealAmount());
+        assertTrue(settings.foodRetentionEnabled());
     }
 
     @Test
@@ -34,7 +35,9 @@ class PluginSettingsTest {
                 "  enabled: false",
                 "mushroom-stew:",
                 "  enabled: false",
-                "  heal-amount: 4.5"));
+                "  heal-amount: 4.5",
+                "food-retention:",
+                "  enabled: false"));
 
         PluginSettings settings = PluginSettings.load(config);
 
@@ -44,6 +47,7 @@ class PluginSettingsTest {
         assertFalse(settings.healthBelowNameEnabled());
         assertFalse(settings.mushroomStewEnabled());
         assertEquals(4.5, settings.mushroomStewHealAmount());
+        assertFalse(settings.foodRetentionEnabled());
     }
 
     @Test

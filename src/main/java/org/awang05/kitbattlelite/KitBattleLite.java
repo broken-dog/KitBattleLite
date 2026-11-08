@@ -25,6 +25,7 @@ import org.awang05.kitbattlelite.hud.SidebarService;
 import org.awang05.kitbattlelite.item.ItemService;
 import org.awang05.kitbattlelite.item.MushroomStewService;
 import org.awang05.kitbattlelite.kit.KitRepository;
+import org.awang05.kitbattlelite.listener.FoodRetentionListener;
 import org.awang05.kitbattlelite.listener.HealthUpdateListener;
 import org.awang05.kitbattlelite.listener.HotbarButtonListener;
 import org.awang05.kitbattlelite.listener.InventoryListener;
@@ -108,6 +109,7 @@ public final class KitBattleLite extends JavaPlugin {
         pluginManager.registerEvents(new ItemDropListener(this, arenaService, stews), this);
         pluginManager.registerEvents(new ProjectileCleanupListener(arenas), this);
         pluginManager.registerEvents(new InventoryListener(arenas), this);
+        pluginManager.registerEvents(new FoodRetentionListener(arenaService, settings), this);
     }
 
     private void registerCommand() {

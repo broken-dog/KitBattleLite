@@ -357,6 +357,7 @@ public final class ArenaService {
         player.setFlying(false);
         player.setHealth(maxHealth(player));
         player.setFoodLevel(20);
+        player.setSaturation(0);
         player.setFireTicks(0);
         player.setFallDistance(0);
     }

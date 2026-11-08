@@ -15,6 +15,7 @@ import java.util.Objects;
  * @param healthBelowNameEnabled  是否用共享计分板显示玩家名下血量
  * @param mushroomStewEnabled     是否启用蘑菇煲回血道具
  * @param mushroomStewHealAmount  每次右键蘑菇煲恢复的血量点数
+ * @param foodRetentionEnabled    竞技场内是否保持饱食度（取消饱食度下降）
  */
 public record PluginSettings(
         int protectionSeconds,
@@ -22,7 +23,8 @@ public record PluginSettings(
         boolean sidebarEnabled,
         boolean healthBelowNameEnabled,
         boolean mushroomStewEnabled,
-        double mushroomStewHealAmount
+        double mushroomStewHealAmount,
+        boolean foodRetentionEnabled
 ) {
     public static final int DEFAULT_PROTECTION_SECONDS = 3;
     public static final int DEFAULT_DEATH_BLINDNESS_TICKS = 40;
@@ -50,7 +52,8 @@ public record PluginSettings(
                 config.getBoolean("health-below-name.enabled", true),
                 config.getBoolean("mushroom-stew.enabled", true),
                 Math.max(0.0, config.getDouble("mushroom-stew.heal-amount",
-                        DEFAULT_MUSHROOM_STEW_HEAL_AMOUNT))
+                        DEFAULT_MUSHROOM_STEW_HEAL_AMOUNT)),
+                config.getBoolean("food-retention.enabled", true)
         );
     }
 }

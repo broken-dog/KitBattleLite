@@ -159,6 +159,7 @@ mvn clean package
 | `health-below-name.enabled` | true | 是否在玩家名下显示血量（会占用主计分板，服上已有 HUD 时可关） |
 | `mushroom-stew.enabled`     | true | 是否启用蘑菇煲回血道具，同时决定竞技场里能否丢弃碗            |
 | `mushroom-stew.heal-amount` | 6.0  | 每次右键蘑菇煲恢复的血量点数，0 或负数视为关闭道具   |
+| `food-retention.enabled`   | true | 是否在竞技场内维持玩家饱食度不下降 |
 
 `messages.yml` 里尖括号中的占位符由插件填值；未配置的键会回退到插件内置文案。
 
