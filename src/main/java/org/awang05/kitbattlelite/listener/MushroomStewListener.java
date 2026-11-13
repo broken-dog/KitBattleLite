@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.awang05.kitbattlelite.arena.ArenaService;
 import org.awang05.kitbattlelite.item.MushroomStewService;
+import org.bukkit.Material;
 
 /**
  * 竞技场内右键蘑菇煲：即时回血并把蘑菇煲换成碗。
@@ -26,6 +27,16 @@ public final class MushroomStewListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) {
+            if (event.getHand() == EquipmentSlot.OFF_HAND
+            && (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.MUSHROOM_STEW
+            || event.getPlayer().getInventory().getItemInMainHand().getType() == Material.BOWL)
+            && arenaService.isInArena(event.getPlayer())) {
+                Material type =event.getPlayer().getInventory().getItemInOffHand().getType();
+                if (type != Material.AIR) {
+                    event.getPlayer().setCooldown(type, 0);
+                    event.setCancelled(true);
+                }
+            }
             return;
         }
         if (!event.getAction().isRightClick()) {
@@ -46,6 +57,16 @@ public final class MushroomStewListener implements Listener {
             return;
         }
         if (event.getHand() != EquipmentSlot.HAND) {
+            if (event.getHand() == EquipmentSlot.OFF_HAND
+                    && (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.MUSHROOM_STEW
+                    || event.getPlayer().getInventory().getItemInMainHand().getType() == Material.BOWL)
+                    && arenaService.isInArena(event.getPlayer())) {
+                Material type =event.getPlayer().getInventory().getItemInOffHand().getType();
+                if (type != Material.AIR) {
+                    event.getPlayer().setCooldown(type, 0);
+                    event.setCancelled(true);
+                }
+            }
             return;
         }
         if (!arenaService.isInArena(event.getPlayer())) {
