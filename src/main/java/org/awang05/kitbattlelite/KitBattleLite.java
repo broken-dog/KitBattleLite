@@ -40,6 +40,7 @@ import org.awang05.kitbattlelite.listener.ProtectionListener;
 import org.awang05.kitbattlelite.player.SessionRegistry;
 import org.awang05.kitbattlelite.player.StatsRepository;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -68,8 +69,8 @@ public final class KitBattleLite extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        saveResource(Messages.FILE_NAME, false);
-        saveResource(KitRepository.FILE_NAME, false);
+        saveResourceIfMissing(Messages.FILE_NAME);
+        saveResourceIfMissing(KitRepository.FILE_NAME);
 
         settings = new SettingsService(this);
         messages = new Messages(this);
@@ -179,5 +180,15 @@ public final class KitBattleLite extends JavaPlugin {
         if (stats != null) {
             stats.save();
         }
+    }
+
+    private void saveResourceIfMissing(String resourcePath) {
+        File targetFile = new File(getDataFolder(), resourcePath);
+
+        if (targetFile.exists()) {
+            return;
+        }
+
+        saveResource(resourcePath, false);
     }
 }
