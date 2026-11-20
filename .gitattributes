@@ -1,11 +1,61 @@
-#
-# https://help.github.com/articles/dealing-with-line-endings/
-#
-# Linux start script should use lf
-/gradlew        text eol=lf
+# ============================================================
+# Default: auto-detect text files and normalize to LF in Git
+# ============================================================
+* text=auto eol=lf
 
-# These are Windows script files and should use crlf
-*.bat           text eol=crlf
+# ============================================================
+# Source code: LF
+# ============================================================
+*.java        text diff=java
+*.kt          text diff=kotlin
+*.kts         text diff=kotlin
+*.groovy      text diff=java
+*.gradle      text diff=java
+*.gradle.kts  text diff=kotlin
 
-# Binary files should be left untouched
-*.jar           binary
+*.properties  text
+*.xml         text
+*.yml         text
+*.yaml        text
+*.json        text
+*.md          text diff=markdown
+*.sql         text
+*.sh          text eol=lf
+
+# ============================================================
+# Shell scripts: always LF
+# ============================================================
+mvnw                         text eol=lf
+gradlew                      text eol=lf
+gradle/wrapper/*.properties  text eol=lf
+gradle/wrapper/*.sha256      text eol=lf
+
+# ============================================================
+# Windows scripts: always CRLF
+# ============================================================
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# ============================================================
+# Binary files
+# ============================================================
+*.class   binary
+*.jar     binary
+*.war     binary
+*.ear     binary
+*.jks     binary
+*.p12     binary
+*.keystore binary
+
+# ============================================================
+# Binary resources
+# ============================================================
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.zip   binary
+*.gz    binary
